@@ -95,6 +95,15 @@ def save_user_gmail_credentials(user_id, credentials):
     if credentials.expiry:
         expiry_str = credentials.expiry.isoformat()
     
+    refresh_token = credentials.refresh_token
+    if not refresh_token:
+        existing = conn.execute(
+            "SELECT refresh_token FROM gmail_tokens WHERE user_id = ?", 
+            (user_id,)
+        ).fetchone()
+        if existing:
+            refresh_token = existing['refresh_token']
+    
     conn.execute("""
         INSERT OR REPLACE INTO gmail_tokens 
         (user_id, token, refresh_token, token_uri, token_expiry, scopes)
@@ -102,7 +111,7 @@ def save_user_gmail_credentials(user_id, credentials):
     """, (
         user_id,
         credentials.token,
-        credentials.refresh_token,
+        refresh_token,
         credentials.token_uri,
         expiry_str,
         json.dumps(credentials.scopes) if credentials.scopes else '[]'
@@ -192,22 +201,6 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
-@app.route("/debug-oauth")
-@login_required
-def debug_oauth():
-    """Debug endpoint to show OAuth configuration"""
-    redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
-    return f"""
-    <h2>OAuth Debug Info</h2>
-    <p><strong>Client ID:</strong> {GOOGLE_CLIENT_ID or 'NOT SET'}</p>
-    <p><strong>Client Secret:</strong> {'SET' if GOOGLE_CLIENT_SECRET else 'NOT SET'}</p>
-    <p><strong>Redirect URI:</strong> {redirect_uri}</p>
-    <p><strong>Scopes:</strong> {', '.join(SCOPES)}</p>
-    <hr>
-    <p><strong>Instructions:</strong> Copy the Redirect URI above and add it to your Google Cloud Console OAuth 2.0 Client ID configuration under "Authorized redirect URIs"</p>
-    <p><a href="/email">Back to Email</a></p>
-    """
-
 @app.route("/gmail-authorize")
 @login_required
 def gmail_authorize():
@@ -219,8 +212,6 @@ def gmail_authorize():
         return redirect(url_for('email'))
     
     redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
-    print(f"[OAuth] Starting flow with redirect_uri: {redirect_uri}")
-    print(f"[OAuth] Client ID: {GOOGLE_CLIENT_ID[:20]}...")
     
     try:
         flow = Flow.from_client_config(
@@ -242,7 +233,6 @@ def gmail_authorize():
             prompt='consent'
         )
         
-        print(f"[OAuth] Authorization URL generated: {authorization_url[:100]}...")
         session['oauth_state'] = state
         return redirect(authorization_url)
     except Exception as e:
@@ -276,7 +266,6 @@ def oauth2callback():
     )
     
     authorization_response = request.url.replace('http://', 'https://')
-    print(f"[OAuth Callback] Authorization response URL: {authorization_response[:100]}...")
     
     try:
         flow.fetch_token(authorization_response=authorization_response)
@@ -285,10 +274,8 @@ def oauth2callback():
         save_user_gmail_credentials(user['id'], credentials)
         
         flash("Gmail connected successfully!", "success")
-        print(f"[OAuth Success] User {user['email']} connected Gmail successfully")
         return redirect(url_for('email'))
     except Exception as e:
-        print(f"[OAuth ERROR] Failed to fetch token: {e}")
         flash(f"Failed to connect Gmail: {str(e)}", "danger")
         return redirect(url_for('email'))
 

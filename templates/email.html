@@ -2,40 +2,83 @@
 {% block content %}
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">📧 Your Gmail Inbox</h2>
+    <div>
+      <h2 class="fw-bold mb-1">📧 Gmail Inbox</h2>
+      <p class="text-muted mb-0">{{ emails|length if emails else 0 }} messages</p>
+    </div>
     {% if connected %}
-    <span class="badge bg-success">Connected</span>
+    <span class="badge bg-success px-3 py-2">
+      <i class="bi bi-check-circle me-1"></i> Connected
+    </span>
     {% else %}
-    <span class="badge bg-warning">Not Connected</span>
+    <span class="badge bg-warning px-3 py-2">
+      <i class="bi bi-exclamation-circle me-1"></i> Not Connected
+    </span>
     {% endif %}
   </div>
 
   {% if emails %}
-  <div class="list-group">
+  <div class="row g-3">
     {% for email in emails %}
-    <div class="list-group-item list-group-item-action">
-      <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">{{ email.subject }}</h5>
-        <small class="text-muted">{{ email.date[:16] if email.date|length > 16 else email.date }}</small>
+    <div class="col-12">
+      <div class="card shadow-sm hover-shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0 fw-semibold" style="color: #2c3e50;">{{ email.subject }}</h5>
+            <small class="text-muted ms-3" style="white-space: nowrap;">{{ email.date }}</small>
+          </div>
+          <p class="text-muted mb-2">
+            <i class="bi bi-person-circle me-1"></i>
+            <strong>{{ email.sender }}</strong>
+          </p>
+          <p class="card-text text-muted">{{ email.snippet }}</p>
+        </div>
       </div>
-      <p class="mb-1"><strong>From:</strong> {{ email.sender }}</p>
-      <small class="text-muted">{{ email.snippet }}</small>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="alert alert-info">
-    {% if not connected %}
-      <h5>Gmail Not Connected</h5>
-      <p>Connect your Gmail account to view your inbox.</p>
-      <a href="{{ url_for('gmail_authorize') }}" class="btn btn-primary mt-3" target="_blank">
-        <i class="bi bi-google"></i> Connect Gmail (Opens in new tab)
-      </a>
-    {% else %}
-      <h5>No Emails Found</h5>
-      <p>Your inbox appears to be empty.</p>
-    {% endif %}
+  <div class="card shadow-sm text-center py-5">
+    <div class="card-body">
+      {% if not connected %}
+        <div class="mb-4">
+          <i class="bi bi-envelope-x" style="font-size: 4rem; color: #6c757d;"></i>
+        </div>
+        <h4 class="mb-3">Connect Your Gmail Account</h4>
+        <p class="text-muted mb-4">Connect your Gmail to access your inbox and manage emails seamlessly.</p>
+        <a href="{{ url_for('gmail_authorize') }}" class="btn btn-primary btn-lg px-5">
+          <i class="bi bi-google me-2"></i> Connect Gmail
+        </a>
+        <p class="text-muted small mt-3 mb-0">
+          <i class="bi bi-shield-check me-1"></i>
+          Secure OAuth 2.0 authentication with Google
+        </p>
+      {% else %}
+        <div class="mb-4">
+          <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+        </div>
+        <h4 class="mb-2">Inbox is Empty</h4>
+        <p class="text-muted">No emails found in your inbox.</p>
+      {% endif %}
+    </div>
   </div>
   {% endif %}
 </div>
+
+<style>
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+.card {
+  border: 1px solid #e9ecef;
+}
+.card-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+</style>
 {% endblock %}
