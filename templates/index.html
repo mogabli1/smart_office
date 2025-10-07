@@ -1,23 +1,105 @@
 {% extends "base.html" %}
 {% block content %}
-  <section class="text-center py-5">
-    <h1 class="display-5 fw-bold title-shadow d-flex justify-content-center align-items-center gap-3">
-      <span class="logo-icon-large">SO</span>
-      <span>SmartOffice <span class="text-primary">AI</span></span>
-    </h1>
-    <p class="lead text-muted">Your Intelligent Admin Assistant</p>
-
-    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
-      <a class="btn btn-outline-primary btn-lg" href="{{ url_for('email') }}">Email</a>
-      <a class="btn btn-outline-primary btn-lg" href="{{ url_for('calendar') }}">Calendar</a>
-      <a class="btn btn-outline-primary btn-lg" href="{{ url_for('reports') }}">Reports</a>
-    </div>
-
-    <div class="card shadow-sm mx-auto mt-5" style="max-width: 720px;">
-      <div class="card-body">
-        <h5 class="card-title mb-3">Welcome, {{ user.name if user else 'User' }}!</h5>
-        <p class="mb-0">This is your SmartOffice AI Dashboard. Next steps will enable Gmail + Calendar integrations and weekly smart reports.</p>
+  <section class="py-5">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-4">Welcome, {{ user.name if user else 'User' }}!</h1>
+      
+      {% if not has_subscription %}
+      <div class="alert alert-warning shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
+          <div class="flex-grow-1">
+            <h5 class="alert-heading mb-1">Upgrade to Premium</h5>
+            <p class="mb-2">You're currently on the Free plan. Upgrade to access Email, Calendar, Reports, and AI-powered features.</p>
+            <a href="{{ url_for('pricing') }}" class="btn btn-warning btn-sm">
+              <i class="bi bi-star-fill me-1"></i>View Plans
+            </a>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-success shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-check-circle-fill me-3" style="font-size: 2rem;"></i>
+          <div class="flex-grow-1">
+            <h5 class="alert-heading mb-1">Premium Active</h5>
+            <p class="mb-0">You have full access to all SmartOffice AI features.</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-envelope-fill" style="font-size: 2rem;"></i>
+              </div>
+              <h3 class="mb-3">Email</h3>
+              <p class="text-muted mb-4">Manage your Gmail inbox with AI-powered organization</p>
+              {% if has_subscription %}
+              <a href="{{ url_for('email') }}" class="btn btn-primary">View Inbox</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill me-1"></i>Premium Only
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-calendar-event-fill" style="font-size: 2rem;"></i>
+              </div>
+              <h3 class="mb-3">Calendar</h3>
+              <p class="text-muted mb-4">Stay on top of your schedule and meetings</p>
+              {% if has_subscription %}
+              <a href="{{ url_for('calendar') }}" class="btn btn-success">View Calendar</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill me-1"></i>Premium Only
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon bg-info bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-file-earmark-text-fill" style="font-size: 2rem;"></i>
+              </div>
+              <h3 class="mb-3">Reports</h3>
+              <p class="text-muted mb-4">Generate automated weekly reports</p>
+              {% if has_subscription %}
+              <a href="{{ url_for('reports') }}" class="btn btn-info">Create Report</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill me-1"></i>Premium Only
+              </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
+
+  <style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  }
+  .opacity-75 {
+    opacity: 0.75;
+  }
+  </style>
 {% endblock %}

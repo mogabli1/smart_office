@@ -478,7 +478,8 @@ def set_language(lang):
 @login_required
 def index():
     user = current_user()
-    return render_template("index.html", user=user)
+    has_subscription = has_active_subscription(user)
+    return render_template("index.html", user=user, has_subscription=has_subscription)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -716,6 +717,12 @@ def oauth2callback():
 @login_required
 def email():
     user = current_user()
+    
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Email features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
+    
     gmail_service = get_gmail_service(user['id'])
     
     if not gmail_service:
@@ -773,6 +780,12 @@ def email():
 def email_detail(email_id):
     """View full email with AI reply suggestions"""
     user = current_user()
+    
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Email features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
+    
     gmail_service = get_gmail_service(user['id'])
     
     if not gmail_service:
@@ -905,6 +918,12 @@ def email_detail(email_id):
 @login_required
 def calendar():
     user = current_user()
+    
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Calendar features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
+    
     calendar_service = get_calendar_service()
     
     if not calendar_service:
@@ -957,6 +976,12 @@ def calendar():
 @login_required
 def reports():
     user = current_user()
+    
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Report features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
+    
     gmail_service = get_gmail_service(user['id'])
     calendar_service = get_calendar_service()
     
