@@ -25,8 +25,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-@app.before_first_request
-def setup():
+with app.app_context():
     init_db()
 
 def current_user():
@@ -113,4 +112,4 @@ def reports():
     return render_template("feature.html", title="Reports", subtitle="Weekly PDF/Word reports will appear here…")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
