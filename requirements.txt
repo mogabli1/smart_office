@@ -9,3 +9,5 @@ requests
 openai
 python-docx
 reportlab
+docx
+stripe
