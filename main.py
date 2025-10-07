@@ -428,7 +428,14 @@ def email():
                 elif header['name'] == 'Date':
                     email_info['date'] = header['value']
             
-            email_info['priority'] = 'normal'
+            if openai_client and OPENAI_API_KEY:
+                email_info['priority'] = analyze_email_priority(
+                    email_info['subject'],
+                    email_info['sender'],
+                    email_info['snippet']
+                )
+            else:
+                email_info['priority'] = 'normal'
             
             emails.append(email_info)
         
