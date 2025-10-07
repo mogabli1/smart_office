@@ -586,14 +586,19 @@ def email():
                 elif header['name'] == 'Date':
                     email_info['date'] = header['value']
             
-            if openai_client and OPENAI_API_KEY:
-                email_info['priority'] = analyze_email_priority(
-                    email_info['subject'],
-                    email_info['sender'],
-                    email_info['snippet']
-                )
-            else:
-                email_info['priority'] = 'normal'
+            # AI prioritization disabled until OpenAI credits added (prevents slow page loads)
+            # When ready: Remove the next line and uncomment the block below
+            email_info['priority'] = 'normal'
+            
+            # UNCOMMENT WHEN OPENAI CREDITS ACTIVE:
+            # if openai_client and OPENAI_API_KEY:
+            #     email_info['priority'] = analyze_email_priority(
+            #         email_info['subject'],
+            #         email_info['sender'],
+            #         email_info['snippet']
+            #     )
+            # else:
+            #     email_info['priority'] = 'normal'
             
             emails.append(email_info)
         
