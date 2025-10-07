@@ -55,32 +55,40 @@ def get_gmail_credentials():
             f"https://{hostname}/api/v2/connection?include_secrets=true&connector_names=google-mail",
             headers={
                 "Accept": "application/json",
-                "X-Replit-Token": x_replit_token
+                "X_REPLIT_TOKEN": x_replit_token
             }
         )
         
         if response.status_code != 200:
-            print(f"Connector API returned status {response.status_code}")
+            print(f"Connector API returned status {response.status_code}: {response.text}")
             return None
         
         data = response.json()
         if not data or "items" not in data or len(data["items"]) == 0:
             print("No Gmail connection found in connector response")
+            print(f"Response data: {data}")
             return None
         
         connection = data["items"][0]
+        print(f"Connection found: {connection.get('name', 'unknown')}")
+        
         settings = connection.get("settings", {})
+        print(f"Settings keys: {list(settings.keys())}")
         
         # Try to get access token from settings structure
         access_token = settings.get("access_token")
         if not access_token and "oauth" in settings:
             oauth_data = settings.get("oauth", {})
+            print(f"OAuth keys: {list(oauth_data.keys())}")
             credentials = oauth_data.get("credentials", {})
+            print(f"Credentials keys: {list(credentials.keys())}")
             access_token = credentials.get("access_token")
         
         if not access_token:
             print("No access token found in connection settings")
             return None
+        
+        print(f"Access token found (length: {len(access_token)})")
         
         # Create credentials with the access token
         creds = Credentials(token=access_token)
@@ -95,13 +103,18 @@ def get_gmail_service():
     """Get authenticated Gmail service"""
     creds = get_gmail_credentials()
     if not creds:
+        print("No credentials available for Gmail service")
         return None
     
     try:
+        print("Building Gmail service...")
         service = build('gmail', 'v1', credentials=creds)
+        print("Gmail service built successfully")
         return service
     except Exception as e:
         print(f"Error building Gmail service: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def current_user():
@@ -184,8 +197,10 @@ def email():
         return render_template("email.html", user=user, emails=[], connected=False)
     
     try:
+        print("Fetching emails from Gmail...")
         results = gmail_service.users().messages().list(userId='me', maxResults=15).execute()
         messages = results.get('messages', [])
+        print(f"Found {len(messages)} messages")
         
         emails = []
         for msg in messages:
@@ -209,9 +224,13 @@ def email():
             
             emails.append(email_info)
         
+        print(f"Successfully processed {len(emails)} emails")
         return render_template("email.html", user=user, emails=emails, connected=True)
     
     except Exception as e:
+        print(f"Error fetching emails: {str(e)}")
+        import traceback
+        traceback.print_exc()
         flash(f"Error fetching emails: {str(e)}", "danger")
         return render_template("email.html", user=user, emails=[], connected=False)
 
