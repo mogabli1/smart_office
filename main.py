@@ -14,11 +14,19 @@ from reportlab.lib import colors
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+import stripe
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 app.config["PREFERRED_URL_SCHEME"] = "https"
 DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
+
+# Stripe configuration
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
+else:
+    print("WARNING: STRIPE_SECRET_KEY not set - subscription features will be disabled")
 
 # OAuth configuration - Must be set as environment variables
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
@@ -137,6 +145,9 @@ def init_db():
             email TEXT UNIQUE NOT NULL,
             name TEXT NOT NULL,
             password_hash TEXT NOT NULL,
+            subscription_status TEXT DEFAULT 'free',
+            stripe_customer_id TEXT,
+            subscription_end_date TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -151,6 +162,21 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
     """)
+    
+    # Add subscription columns to existing users if they don't exist
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN subscription_status TEXT DEFAULT 'free'")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN stripe_customer_id TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        conn.execute("ALTER TABLE users ADD COLUMN subscription_end_date TEXT")
+    except sqlite3.OperationalError:
+        pass
+    
     conn.commit()
     conn.close()
 
@@ -404,9 +430,32 @@ def current_user():
     if not uid:
         return None
     conn = get_db()
-    user = conn.execute("SELECT id, email, name FROM users WHERE id = ?", (uid,)).fetchone()
+    user = conn.execute(
+        "SELECT id, email, name, subscription_status, subscription_end_date FROM users WHERE id = ?", 
+        (uid,)
+    ).fetchone()
     conn.close()
     return user
+
+def has_active_subscription(user):
+    """Check if user has an active subscription"""
+    if not user:
+        return False
+    
+    status = user.get('subscription_status', 'free')
+    if status == 'active':
+        return True
+    
+    # Check if subscription end date is in the future
+    end_date_str = user.get('subscription_end_date')
+    if end_date_str:
+        try:
+            end_date = datetime.fromisoformat(end_date_str)
+            return datetime.now() < end_date
+        except:
+            pass
+    
+    return False
 
 def login_required(f):
     from functools import wraps
