@@ -79,15 +79,16 @@ def register():
             flash("All fields are required.", "warning")
             return render_template("register.html", name=name, email=email)
         pw_hash = generate_password_hash(password)
+        conn = get_db()
         try:
-            conn = get_db()
             conn.execute("INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)", (email, name, pw_hash))
             conn.commit()
-            conn.close()
             flash("Account created. Please log in.", "success")
             return redirect(url_for("login"))
         except sqlite3.IntegrityError:
             flash("Email already registered.", "danger")
+        finally:
+            conn.close()
     return render_template("register.html")
 
 @app.route("/logout")
