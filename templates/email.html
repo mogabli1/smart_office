@@ -27,7 +27,10 @@
   <div class="alert alert-info">
     {% if not connected %}
       <h5>Gmail Not Connected</h5>
-      <p>Please make sure your Gmail connection is active in Replit.</p>
+      <p>Connect your Gmail account to view your inbox.</p>
+      <a href="{{ url_for('gmail_authorize') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-google"></i> Connect Gmail
+      </a>
     {% else %}
       <h5>No Emails Found</h5>
       <p>Your inbox appears to be empty.</p>

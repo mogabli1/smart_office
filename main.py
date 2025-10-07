@@ -1,14 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3, os
-import requests
+import sqlite3, os, json
 from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from datetime import datetime
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
+
+# OAuth configuration - Must be set as environment variables
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+
+if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+    print("WARNING: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables must be set for Gmail integration")
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -26,95 +34,92 @@ def init_db():
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS gmail_tokens (
+            user_id INTEGER PRIMARY KEY,
+            token TEXT NOT NULL,
+            refresh_token TEXT,
+            token_uri TEXT,
+            token_expiry TEXT,
+            scopes TEXT,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    """)
     conn.commit()
     conn.close()
 
 with app.app_context():
     init_db()
 
-def get_gmail_credentials():
-    """Get Gmail credentials from Replit Connectors"""
-    hostname = os.environ.get("REPLIT_CONNECTORS_HOSTNAME")
-    repl_identity = os.environ.get("REPL_IDENTITY")
-    web_repl_renewal = os.environ.get("WEB_REPL_RENEWAL")
+def get_user_gmail_credentials(user_id):
+    """Get Gmail credentials from database for a specific user"""
+    conn = get_db()
+    token_row = conn.execute("SELECT * FROM gmail_tokens WHERE user_id = ?", (user_id,)).fetchone()
+    conn.close()
     
-    if not hostname:
+    if not token_row:
         return None
     
-    x_replit_token = None
-    if repl_identity:
-        x_replit_token = f"repl {repl_identity}"
-    elif web_repl_renewal:
-        x_replit_token = f"depl {web_repl_renewal}"
+    from datetime import datetime
+    expiry = None
+    if token_row['token_expiry']:
+        try:
+            expiry = datetime.fromisoformat(token_row['token_expiry'])
+        except:
+            pass
     
-    if not x_replit_token:
-        return None
+    creds = Credentials(
+        token=token_row['token'],
+        refresh_token=token_row['refresh_token'],
+        token_uri=token_row['token_uri'],
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scopes=json.loads(token_row['scopes']) if token_row['scopes'] else [],
+        expiry=expiry
+    )
     
-    try:
-        response = requests.get(
-            f"https://{hostname}/api/v2/connection?include_secrets=true&connector_names=google-mail",
-            headers={
-                "Accept": "application/json",
-                "X_REPLIT_TOKEN": x_replit_token
-            }
-        )
-        
-        if response.status_code != 200:
-            print(f"Connector API returned status {response.status_code}: {response.text}")
-            return None
-        
-        data = response.json()
-        if not data or "items" not in data or len(data["items"]) == 0:
-            print("No Gmail connection found in connector response")
-            print(f"Response data: {data}")
-            return None
-        
-        connection = data["items"][0]
-        print(f"Connection found: {connection.get('name', 'unknown')}")
-        
-        settings = connection.get("settings", {})
-        print(f"Settings keys: {list(settings.keys())}")
-        
-        # Try to get access token from settings structure
-        access_token = settings.get("access_token")
-        if not access_token and "oauth" in settings:
-            oauth_data = settings.get("oauth", {})
-            print(f"OAuth keys: {list(oauth_data.keys())}")
-            credentials = oauth_data.get("credentials", {})
-            print(f"Credentials keys: {list(credentials.keys())}")
-            access_token = credentials.get("access_token")
-        
-        if not access_token:
-            print("No access token found in connection settings")
-            return None
-        
-        print(f"Access token found (length: {len(access_token)})")
-        
-        # Create credentials with the access token
-        creds = Credentials(token=access_token)
-        
-        return creds
+    # Refresh token if expired
+    if creds.expired and creds.refresh_token:
+        from google.auth.transport.requests import Request
+        creds.refresh(Request())
+        save_user_gmail_credentials(user_id, creds)
     
-    except Exception as e:
-        print(f"Error getting Gmail credentials: {e}")
-        return None
+    return creds
 
-def get_gmail_service():
-    """Get authenticated Gmail service"""
-    creds = get_gmail_credentials()
+def save_user_gmail_credentials(user_id, credentials):
+    """Save Gmail credentials to database for a specific user"""
+    conn = get_db()
+    
+    expiry_str = None
+    if credentials.expiry:
+        expiry_str = credentials.expiry.isoformat()
+    
+    conn.execute("""
+        INSERT OR REPLACE INTO gmail_tokens 
+        (user_id, token, refresh_token, token_uri, token_expiry, scopes)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        credentials.token,
+        credentials.refresh_token,
+        credentials.token_uri,
+        expiry_str,
+        json.dumps(credentials.scopes) if credentials.scopes else '[]'
+    ))
+    conn.commit()
+    conn.close()
+
+def get_gmail_service(user_id):
+    """Get authenticated Gmail service for a specific user"""
+    creds = get_user_gmail_credentials(user_id)
     if not creds:
-        print("No credentials available for Gmail service")
         return None
     
     try:
-        print("Building Gmail service...")
         service = build('gmail', 'v1', credentials=creds)
-        print("Gmail service built successfully")
         return service
     except Exception as e:
         print(f"Error building Gmail service: {e}")
-        import traceback
-        traceback.print_exc()
         return None
 
 def current_user():
@@ -186,21 +191,81 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
+@app.route("/gmail-authorize")
+@login_required
+def gmail_authorize():
+    """Start OAuth flow for Gmail"""
+    user = current_user()
+    
+    redirect_uri = url_for('oauth2callback', _external=True)
+    
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        },
+        scopes=SCOPES,
+        redirect_uri=redirect_uri
+    )
+    
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='consent'
+    )
+    
+    session['oauth_state'] = state
+    return redirect(authorization_url)
+
+@app.route("/oauth2callback")
+def oauth2callback():
+    """Handle OAuth callback from Google"""
+    user = current_user()
+    if not user:
+        flash("Please log in first.", "warning")
+        return redirect(url_for('login'))
+    
+    state = session.get('oauth_state')
+    redirect_uri = url_for('oauth2callback', _external=True)
+    
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        },
+        scopes=SCOPES,
+        state=state,
+        redirect_uri=redirect_uri
+    )
+    
+    flow.fetch_token(authorization_response=request.url)
+    
+    credentials = flow.credentials
+    save_user_gmail_credentials(user['id'], credentials)
+    
+    flash("Gmail connected successfully!", "success")
+    return redirect(url_for('email'))
+
 @app.route("/email")
 @login_required
 def email():
     user = current_user()
-    gmail_service = get_gmail_service()
+    gmail_service = get_gmail_service(user['id'])
     
     if not gmail_service:
-        flash("Gmail is not connected. Please reconnect your Gmail account.", "warning")
         return render_template("email.html", user=user, emails=[], connected=False)
     
     try:
-        print("Fetching emails from Gmail...")
         results = gmail_service.users().messages().list(userId='me', maxResults=15).execute()
         messages = results.get('messages', [])
-        print(f"Found {len(messages)} messages")
         
         emails = []
         for msg in messages:
@@ -224,13 +289,10 @@ def email():
             
             emails.append(email_info)
         
-        print(f"Successfully processed {len(emails)} emails")
         return render_template("email.html", user=user, emails=emails, connected=True)
     
     except Exception as e:
         print(f"Error fetching emails: {str(e)}")
-        import traceback
-        traceback.print_exc()
         flash(f"Error fetching emails: {str(e)}", "danger")
         return render_template("email.html", user=user, emails=[], connected=False)
 

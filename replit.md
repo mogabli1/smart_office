@@ -13,8 +13,10 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 - Created Python .gitignore file
 - Set up deployment configuration with autoscale
 - Created professional gradient logo (purple "SO" icon)
-- **Integrated Gmail using Replit Connector** - displays real emails from user's Gmail inbox
-- Added Google API Python client libraries for Gmail integration
+- **Implemented Manual Gmail OAuth Integration** - full inbox access with gmail.readonly scope
+- Added OAuth flow with Google Cloud credentials for Gmail API access
+- Created database table to store OAuth tokens per user
+- Added Gmail authorization and callback routes
 
 ## Project Architecture
 
@@ -61,10 +63,13 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
    - Flash messaging for user feedback
 
 3. **Gmail Integration** (ACTIVE)
-   - Connected via Replit Gmail Connector
+   - Manual OAuth 2.0 integration with Google Cloud credentials
+   - Full gmail.readonly scope for complete inbox access
+   - Per-user token storage in database
+   - OAuth authorization flow with callback handling
    - Displays user's inbox (last 15 emails)
    - Shows subject, sender, date, and snippet
-   - Automatic token refresh for seamless authentication
+   - "Connect Gmail" button for easy authorization
 
 4. **Planned Integrations** (Placeholder pages)
    - Calendar: Google Calendar integration
