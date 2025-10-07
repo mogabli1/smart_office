@@ -191,6 +191,22 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
+@app.route("/debug-oauth")
+@login_required
+def debug_oauth():
+    """Debug endpoint to show OAuth configuration"""
+    redirect_uri = url_for('oauth2callback', _external=True)
+    return f"""
+    <h2>OAuth Debug Info</h2>
+    <p><strong>Client ID:</strong> {GOOGLE_CLIENT_ID or 'NOT SET'}</p>
+    <p><strong>Client Secret:</strong> {'SET' if GOOGLE_CLIENT_SECRET else 'NOT SET'}</p>
+    <p><strong>Redirect URI:</strong> {redirect_uri}</p>
+    <p><strong>Scopes:</strong> {', '.join(SCOPES)}</p>
+    <hr>
+    <p><strong>Instructions:</strong> Copy the Redirect URI above and add it to your Google Cloud Console OAuth 2.0 Client ID configuration under "Authorized redirect URIs"</p>
+    <p><a href="/email">Back to Email</a></p>
+    """
+
 @app.route("/gmail-authorize")
 @login_required
 def gmail_authorize():
