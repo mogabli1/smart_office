@@ -21,6 +21,9 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 - **Improved email inbox UI** - modern card design with hover effects
 - **Fixed critical refresh token bug** - preserves refresh tokens on re-authorization
 - Cleaned up debug code and logging
+- **Implemented Google Calendar Integration** - using Replit connector for seamless authentication
+- Added calendar route to display upcoming events with modern UI
+- Created helper functions to fetch access tokens from Replit connector API
 
 ## Project Architecture
 
@@ -75,9 +78,19 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
    - Shows subject, sender, date, and snippet
    - "Connect Gmail" button for easy authorization
 
-4. **Planned Integrations** (Placeholder pages)
-   - Calendar: Google Calendar integration
-   - Reports: Weekly PDF/Word report generation
+4. **Google Calendar Integration** (ACTIVE)
+   - Integrated via Replit connector (project-level OAuth)
+   - Displays up to 20 upcoming calendar events
+   - Shows event title, date/time, location, and description
+   - Links to view events in Google Calendar
+   - Modern card-based UI with hover effects
+   - Automatic token refresh handled by Replit
+
+5. **Planned Features**
+   - AI-powered email priority categorization
+   - AI email reply suggestions
+   - Automated PDF/Word report generation
+   - Bilingual interface support (English/Arabic)
 
 ### Database Schema
 **users table**:
