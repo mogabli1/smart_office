@@ -5,6 +5,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from datetime import datetime, timezone, timedelta
+from openai import OpenAI
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -18,6 +19,14 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
     print("WARNING: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables must be set for Gmail integration")
+
+# OpenAI configuration
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+openai_client = None
+if OPENAI_API_KEY:
+    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+else:
+    print("INFO: OPENAI_API_KEY not set - AI features will be disabled")
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -189,6 +198,55 @@ def get_calendar_service():
     except Exception as e:
         print(f"Error building Calendar service: {e}")
         return None
+
+def analyze_email_priority(subject, sender, snippet):
+    """
+    Use AI to analyze email priority
+    Returns: 'urgent', 'important', or 'normal'
+    
+    Note: the newest OpenAI model is "gpt-5" which was released August 7, 2025.
+    do not change this unless explicitly requested by the user
+    """
+    if not openai_client:
+        return 'normal'
+    
+    try:
+        prompt = f"""Analyze this email and categorize its priority level.
+
+Subject: {subject}
+From: {sender}
+Preview: {snippet}
+
+Categorize as one of:
+- urgent: Requires immediate action (deadlines, urgent requests, time-sensitive)
+- important: Significant but not time-critical (project updates, important decisions)
+- normal: Regular communication (newsletters, routine updates, general info)
+
+Respond with JSON in this exact format: {{"priority": "urgent|important|normal", "reason": "brief explanation"}}"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-5",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an email priority assistant. Analyze emails and categorize them accurately."
+                },
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+            max_completion_tokens=200
+        )
+        
+        result = json.loads(response.choices[0].message.content)
+        priority = result.get('priority', 'normal').lower()
+        
+        if priority not in ['urgent', 'important', 'normal']:
+            priority = 'normal'
+        
+        return priority
+    except Exception as e:
+        print(f"Error analyzing email priority: {e}")
+        return 'normal'
 
 def current_user():
     uid = session.get("user_id")
@@ -369,6 +427,15 @@ def email():
                     email_info['sender'] = header['value']
                 elif header['name'] == 'Date':
                     email_info['date'] = header['value']
+            
+            if openai_client:
+                email_info['priority'] = analyze_email_priority(
+                    email_info['subject'],
+                    email_info['sender'],
+                    email_info['snippet']
+                )
+            else:
+                email_info['priority'] = 'normal'
             
             emails.append(email_info)
         
