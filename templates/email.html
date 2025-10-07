@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">📧 Your Gmail Inbox</h2>
+    {% if connected %}
+    <span class="badge bg-success">Connected</span>
+    {% else %}
+    <span class="badge bg-warning">Not Connected</span>
+    {% endif %}
+  </div>
+
+  {% if emails %}
+  <div class="list-group">
+    {% for email in emails %}
+    <div class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{ email.subject }}</h5>
+        <small class="text-muted">{{ email.date[:16] if email.date|length > 16 else email.date }}</small>
+      </div>
+      <p class="mb-1"><strong>From:</strong> {{ email.sender }}</p>
+      <small class="text-muted">{{ email.snippet }}</small>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    {% if not connected %}
+      <h5>Gmail Not Connected</h5>
+      <p>Please make sure your Gmail connection is active in Replit.</p>
+    {% else %}
+      <h5>No Emails Found</h5>
+      <p>Your inbox appears to be empty.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

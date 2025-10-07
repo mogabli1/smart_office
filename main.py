@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3, os
+import requests
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from datetime import datetime
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -27,6 +31,52 @@ def init_db():
 
 with app.app_context():
     init_db()
+
+def get_gmail_access_token():
+    """Get Gmail access token from Replit Connectors"""
+    hostname = os.environ.get("REPLIT_CONNECTORS_HOSTNAME")
+    repl_identity = os.environ.get("REPL_IDENTITY")
+    web_repl_renewal = os.environ.get("WEB_REPL_RENEWAL")
+    
+    if not hostname:
+        return None
+    
+    x_replit_token = None
+    if repl_identity:
+        x_replit_token = f"repl {repl_identity}"
+    elif web_repl_renewal:
+        x_replit_token = f"depl {web_repl_renewal}"
+    
+    if not x_replit_token:
+        return None
+    
+    try:
+        response = requests.get(
+            f"https://{hostname}/api/v2/connection?include_secrets=true&connector_names=google-mail",
+            headers={
+                "Accept": "application/json",
+                "X_REPLIT_TOKEN": x_replit_token
+            }
+        )
+        data = response.json()
+        if data and "items" in data and len(data["items"]) > 0:
+            connection = data["items"][0]
+            return connection.get("settings", {}).get("access_token")
+    except Exception as e:
+        print(f"Error getting Gmail token: {e}")
+        return None
+    
+    return None
+
+def get_gmail_service():
+    """Get authenticated Gmail service"""
+    access_token = get_gmail_access_token()
+    if not access_token:
+        return None
+    
+    creds = Credentials(token=access_token)
+    service = build('gmail', 'v1', credentials=creds)
+    return service
 
 def current_user():
     uid = session.get("user_id")
@@ -100,7 +150,44 @@ def logout():
 @app.route("/email")
 @login_required
 def email():
-    return render_template("feature.html", title="Email", subtitle="Connect Gmail API next…")
+    user = current_user()
+    gmail_service = get_gmail_service()
+    
+    if not gmail_service:
+        flash("Gmail is not connected. Please reconnect your Gmail account.", "warning")
+        return render_template("email.html", user=user, emails=[], connected=False)
+    
+    try:
+        results = gmail_service.users().messages().list(userId='me', maxResults=15).execute()
+        messages = results.get('messages', [])
+        
+        emails = []
+        for msg in messages:
+            msg_data = gmail_service.users().messages().get(userId='me', id=msg['id'], format='metadata', metadataHeaders=['From', 'Subject', 'Date']).execute()
+            
+            email_info = {
+                'id': msg['id'],
+                'subject': 'No Subject',
+                'sender': 'Unknown',
+                'date': 'Unknown',
+                'snippet': msg_data.get('snippet', '')
+            }
+            
+            for header in msg_data.get('payload', {}).get('headers', []):
+                if header['name'] == 'Subject':
+                    email_info['subject'] = header['value']
+                elif header['name'] == 'From':
+                    email_info['sender'] = header['value']
+                elif header['name'] == 'Date':
+                    email_info['date'] = header['value']
+            
+            emails.append(email_info)
+        
+        return render_template("email.html", user=user, emails=emails, connected=True)
+    
+    except Exception as e:
+        flash(f"Error fetching emails: {str(e)}", "danger")
+        return render_template("email.html", user=user, emails=[], connected=False)
 
 @app.route("/calendar")
 @login_required
