@@ -17,6 +17,10 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 - Added OAuth flow with Google Cloud credentials for Gmail API access
 - Created database table to store OAuth tokens per user
 - Added Gmail authorization and callback routes
+- **Fixed OAuth https redirect URI handling** - forced https scheme for proper Google OAuth
+- **Improved email inbox UI** - modern card design with hover effects
+- **Fixed critical refresh token bug** - preserves refresh tokens on re-authorization
+- Cleaned up debug code and logging
 
 ## Project Architecture
 
