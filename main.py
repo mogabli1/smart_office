@@ -248,6 +248,61 @@ Respond with JSON in this exact format: {{"priority": "urgent|important|normal",
         print(f"Error analyzing email priority: {e}")
         return 'normal'
 
+def generate_email_replies(subject, sender, body):
+    """
+    Generate AI-powered email reply suggestions
+    Returns: List of reply suggestions with different tones
+    """
+    if not openai_client:
+        return []
+    
+    try:
+        prompt = f"""Generate 3 professional email reply suggestions for this email with different tones:
+
+Subject: {subject}
+From: {sender}
+Email Body:
+{body[:1000]}
+
+Generate 3 replies:
+1. Professional - Formal and detailed
+2. Friendly - Warm and conversational
+3. Brief - Short and to the point
+
+Each reply should:
+- Address the email appropriately
+- Be complete and ready to send
+- Match the requested tone
+- Be 2-4 sentences long
+
+Respond with JSON in this exact format:
+{{
+  "replies": [
+    {{"tone": "Professional", "text": "reply text here"}},
+    {{"tone": "Friendly", "text": "reply text here"}},
+    {{"tone": "Brief", "text": "reply text here"}}
+  ]
+}}"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-5",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional email assistant. Generate helpful, contextually appropriate email replies."
+                },
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+            max_completion_tokens=500
+        )
+        
+        result = json.loads(response.choices[0].message.content)
+        return result.get('replies', [])
+    except Exception as e:
+        print(f"Error generating email replies: {e}")
+        return []
+
 def current_user():
     uid = session.get("user_id")
     if not uid:
@@ -450,6 +505,139 @@ def email():
         print(f"Error fetching emails: {str(e)}")
         flash(f"Error fetching emails: {str(e)}", "danger")
         return render_template("email.html", user=user, emails=[], connected=False)
+
+@app.route("/email/<email_id>")
+@login_required
+def email_detail(email_id):
+    """View full email with AI reply suggestions"""
+    user = current_user()
+    gmail_service = get_gmail_service(user['id'])
+    
+    if not gmail_service:
+        flash("Gmail not connected.", "warning")
+        return redirect(url_for('email'))
+    
+    try:
+        msg_data = gmail_service.users().messages().get(
+            userId='me', 
+            id=email_id, 
+            format='full'
+        ).execute()
+        
+        email_info = {
+            'id': email_id,
+            'subject': 'No Subject',
+            'sender': 'Unknown',
+            'date': 'Unknown',
+            'body': '',
+            'snippet': msg_data.get('snippet', ''),
+            'priority': 'normal'
+        }
+        
+        for header in msg_data.get('payload', {}).get('headers', []):
+            if header['name'] == 'Subject':
+                email_info['subject'] = header['value']
+            elif header['name'] == 'From':
+                email_info['sender'] = header['value']
+            elif header['name'] == 'Date':
+                email_info['date'] = header['value']
+        
+        import base64
+        import re
+        from html import unescape
+        
+        def extract_email_body(payload):
+            """Recursively extract email body, handling nested multipart structures"""
+            body_text = ''
+            body_html = ''
+            
+            def decode_part(data_str):
+                if not data_str:
+                    return ''
+                try:
+                    return base64.urlsafe_b64decode(data_str).decode('utf-8', errors='ignore')
+                except:
+                    return ''
+            
+            def strip_html(html_text):
+                """Convert HTML to plain text"""
+                text = re.sub(r'<style[^>]*>.*?</style>', '', html_text, flags=re.DOTALL | re.IGNORECASE)
+                text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.DOTALL | re.IGNORECASE)
+                text = re.sub(r'<[^>]+>', ' ', text)
+                text = unescape(text)
+                text = re.sub(r'\s+', ' ', text)
+                return text.strip()
+            
+            def parse_parts(parts):
+                nonlocal body_text, body_html
+                for part in parts:
+                    mime_type = part.get('mimeType', '')
+                    
+                    if 'parts' in part:
+                        parse_parts(part['parts'])
+                    elif mime_type == 'text/plain':
+                        data = part.get('body', {}).get('data', '')
+                        decoded = decode_part(data)
+                        if decoded and not body_text:
+                            body_text = decoded
+                    elif mime_type == 'text/html':
+                        data = part.get('body', {}).get('data', '')
+                        decoded = decode_part(data)
+                        if decoded and not body_html:
+                            body_html = decoded
+            
+            if 'parts' in payload:
+                parse_parts(payload['parts'])
+            else:
+                mime_type = payload.get('mimeType', '')
+                data = payload.get('body', {}).get('data', '')
+                decoded = decode_part(data)
+                
+                if mime_type == 'text/plain':
+                    body_text = decoded
+                elif mime_type == 'text/html':
+                    body_html = decoded
+            
+            if body_text:
+                return body_text
+            elif body_html:
+                return strip_html(body_html)
+            else:
+                return ''
+        
+        payload = msg_data.get('payload', {})
+        body = extract_email_body(payload)
+        
+        body_extracted_successfully = bool(body and body.strip())
+        
+        if not body_extracted_successfully:
+            body = email_info['snippet'] + "\n\n[Note: Full email content could not be extracted. Showing preview only.]"
+        
+        email_info['body'] = body
+        email_info['body_extracted'] = body_extracted_successfully
+        
+        reply_suggestions = []
+        ai_enabled = bool(openai_client and OPENAI_API_KEY)
+        
+        if ai_enabled and body_extracted_successfully:
+            reply_suggestions = generate_email_replies(
+                email_info['subject'],
+                email_info['sender'],
+                body
+            )
+        
+        return render_template(
+            "email_detail.html",
+            user=user,
+            email=email_info,
+            reply_suggestions=reply_suggestions,
+            ai_enabled=ai_enabled
+        )
+    
+    except Exception as e:
+        print(f"Error fetching email detail: {str(e)}")
+        flash(f"Error loading email: {str(e)}", "danger")
+        return redirect(url_for('email'))
 
 @app.route("/calendar")
 @login_required
