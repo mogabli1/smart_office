@@ -1,11 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3, os, json, requests
+import sqlite3, os, json, requests, io
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from datetime import datetime, timezone, timedelta
 from openai import OpenAI
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from docx import Document
+from docx.shared import Inches, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -694,7 +702,223 @@ def calendar():
 @app.route("/reports")
 @login_required
 def reports():
-    return render_template("feature.html", title="Reports", subtitle="Weekly PDF/Word reports will appear here…")
+    user = current_user()
+    gmail_service = get_gmail_service(user['id'])
+    calendar_service = get_calendar_service()
+    
+    gmail_connected = bool(gmail_service)
+    calendar_connected = bool(calendar_service)
+    
+    return render_template("reports.html", user=user, 
+                         gmail_connected=gmail_connected,
+                         calendar_connected=calendar_connected)
+
+@app.route("/generate-report", methods=["POST"])
+@login_required
+def generate_report():
+    user = current_user()
+    
+    report_period = request.form.get('report_period')
+    report_format = request.form.get('report_format', 'pdf')
+    include_emails = 'include_emails' in request.form
+    include_calendar = 'include_calendar' in request.form
+    
+    if report_period == 'week':
+        start_date = datetime.now() - timedelta(days=7)
+        end_date = datetime.now()
+        period_name = "Past Week"
+    elif report_period == 'month':
+        start_date = datetime.now() - timedelta(days=30)
+        end_date = datetime.now()
+        period_name = "Past Month"
+    else:
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        if not start_date_str or not end_date_str:
+            flash("Please provide start and end dates for custom period.", "danger")
+            return redirect(url_for('reports'))
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+        period_name = f"{start_date.strftime('%b %d')} - {end_date.strftime('%b %d, %Y')}"
+    
+    report_data = {
+        'user_name': user['name'],
+        'period': period_name,
+        'start_date': start_date,
+        'end_date': end_date,
+        'emails': [],
+        'events': []
+    }
+    
+    if include_emails:
+        gmail_service = get_gmail_service(user['id'])
+        if gmail_service:
+            try:
+                after_timestamp = int(start_date.timestamp())
+                results = gmail_service.users().messages().list(
+                    userId='me',
+                    maxResults=50,
+                    q=f'after:{after_timestamp}'
+                ).execute()
+                messages = results.get('messages', [])
+                
+                for msg in messages[:20]:
+                    msg_data = gmail_service.users().messages().get(
+                        userId='me',
+                        id=msg['id'],
+                        format='metadata',
+                        metadataHeaders=['From', 'Subject', 'Date']
+                    ).execute()
+                    
+                    email_info = {'subject': 'No Subject', 'sender': 'Unknown', 'date': 'Unknown'}
+                    for header in msg_data.get('payload', {}).get('headers', []):
+                        if header['name'] == 'Subject':
+                            email_info['subject'] = header['value']
+                        elif header['name'] == 'From':
+                            email_info['sender'] = header['value']
+                        elif header['name'] == 'Date':
+                            email_info['date'] = header['value']
+                    
+                    report_data['emails'].append(email_info)
+            except Exception as e:
+                print(f"Error fetching emails for report: {e}")
+    
+    if include_calendar:
+        calendar_service = get_calendar_service()
+        if calendar_service:
+            try:
+                time_min = start_date.isoformat() + 'Z'
+                time_max = end_date.isoformat() + 'Z'
+                
+                events_result = calendar_service.events().list(
+                    calendarId='primary',
+                    timeMin=time_min,
+                    timeMax=time_max,
+                    maxResults=50,
+                    singleEvents=True,
+                    orderBy='startTime'
+                ).execute()
+                
+                events = events_result.get('items', [])
+                for event in events:
+                    start = event['start'].get('dateTime', event['start'].get('date'))
+                    report_data['events'].append({
+                        'summary': event.get('summary', 'No Title'),
+                        'start': start,
+                        'location': event.get('location', '')
+                    })
+            except Exception as e:
+                print(f"Error fetching calendar events for report: {e}")
+    
+    if report_format == 'pdf':
+        return generate_pdf_report(report_data)
+    else:
+        return generate_docx_report(report_data)
+
+def generate_pdf_report(data):
+    """Generate PDF report using ReportLab"""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    story = []
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#0d6efd'),
+        spaceAfter=30,
+        alignment=1
+    )
+    
+    story.append(Paragraph("SmartOffice AI Report", title_style))
+    story.append(Paragraph(f"<b>For:</b> {data['user_name']}", styles['Normal']))
+    story.append(Paragraph(f"<b>Period:</b> {data['period']}", styles['Normal']))
+    story.append(Spacer(1, 0.3*inch))
+    
+    if data['emails']:
+        story.append(Paragraph(f"<b>Email Summary ({len(data['emails'])} emails)</b>", styles['Heading2']))
+        story.append(Spacer(1, 0.2*inch))
+        
+        email_data = [['Date', 'From', 'Subject']]
+        for email in data['emails'][:15]:
+            email_data.append([
+                Paragraph(email['date'][:20], styles['Normal']),
+                Paragraph(email['sender'][:30], styles['Normal']),
+                Paragraph(email['subject'][:50], styles['Normal'])
+            ])
+        
+        table = Table(email_data, colWidths=[1.5*inch, 2*inch, 3*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0d6efd')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ]))
+        story.append(table)
+        story.append(Spacer(1, 0.4*inch))
+    
+    if data['events']:
+        story.append(Paragraph(f"<b>Calendar Events ({len(data['events'])} events)</b>", styles['Heading2']))
+        story.append(Spacer(1, 0.2*inch))
+        
+        for event in data['events'][:15]:
+            story.append(Paragraph(f"• <b>{event['summary']}</b>", styles['Normal']))
+            story.append(Paragraph(f"  {event['start']} {event['location']}", styles['Normal']))
+            story.append(Spacer(1, 0.1*inch))
+    
+    doc.build(story)
+    buffer.seek(0)
+    
+    filename = f"SmartOffice_Report_{datetime.now().strftime('%Y%m%d')}.pdf"
+    return send_file(buffer, as_attachment=True, download_name=filename, mimetype='application/pdf')
+
+def generate_docx_report(data):
+    """Generate Word document report"""
+    doc = Document()
+    
+    title = doc.add_heading('SmartOffice AI Report', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    doc.add_paragraph(f"For: {data['user_name']}")
+    doc.add_paragraph(f"Period: {data['period']}")
+    doc.add_paragraph()
+    
+    if data['emails']:
+        doc.add_heading(f'Email Summary ({len(data["emails"])} emails)', level=1)
+        
+        table = doc.add_table(rows=1, cols=3)
+        table.style = 'Light Grid Accent 1'
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Date'
+        hdr_cells[1].text = 'From'
+        hdr_cells[2].text = 'Subject'
+        
+        for email in data['emails'][:15]:
+            row_cells = table.add_row().cells
+            row_cells[0].text = email['date'][:20]
+            row_cells[1].text = email['sender'][:30]
+            row_cells[2].text = email['subject'][:50]
+        
+        doc.add_paragraph()
+    
+    if data['events']:
+        doc.add_heading(f'Calendar Events ({len(data["events"])} events)', level=1)
+        
+        for event in data['events'][:15]:
+            doc.add_paragraph(f"{event['summary']}", style='List Bullet')
+            doc.add_paragraph(f"  {event['start']} {event['location']}", style='Body Text')
+    
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    
+    filename = f"SmartOffice_Report_{datetime.now().strftime('%Y%m%d')}.docx"
+    return send_file(buffer, as_attachment=True, download_name=filename, 
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)

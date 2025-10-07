@@ -7,3 +7,5 @@ google-auth-oauthlib
 google-auth
 requests
 openai
+python-docx
+reportlab

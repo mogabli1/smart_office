@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1">📊 Reports</h2>
+    <p class="text-muted mb-0">Generate weekly/monthly activity reports from your emails and calendar</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h5 class="card-title fw-semibold mb-4">Generate New Report</h5>
+          
+          <form method="POST" action="{{ url_for('generate_report') }}">
+            <div class="mb-4">
+              <label for="report_period" class="form-label fw-semibold">Report Period</label>
+              <select class="form-select" id="report_period" name="report_period" required>
+                <option value="week">Past Week</option>
+                <option value="month" selected>Past Month</option>
+                <option value="custom">Custom Date Range</option>
+              </select>
+            </div>
+
+            <div class="mb-4" id="custom_dates" style="display: none;">
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <label for="start_date" class="form-label">Start Date</label>
+                  <input type="date" class="form-control" id="start_date" name="start_date">
+                </div>
+                <div class="col-md-6">
+                  <label for="end_date" class="form-label">End Date</label>
+                  <input type="date" class="form-control" id="end_date" name="end_date">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="report_format" class="form-label fw-semibold">Report Format</label>
+              <select class="form-select" id="report_format" name="report_format" required>
+                <option value="pdf" selected>PDF Document</option>
+                <option value="docx">Word Document (.docx)</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Include in Report</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="include_emails" name="include_emails" checked>
+                <label class="form-check-label" for="include_emails">
+                  <i class="bi bi-envelope me-1"></i> Email Summary
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="include_calendar" name="include_calendar" checked>
+                <label class="form-check-label" for="include_calendar">
+                  <i class="bi bi-calendar-event me-1"></i> Calendar Events
+                </label>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-file-earmark-pdf me-2"></i> Generate Report
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {% if not gmail_connected and not calendar_connected %}
+      <div class="alert alert-warning mt-4">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Connect your accounts</strong> to generate comprehensive reports. 
+        <a href="{{ url_for('email') }}" class="alert-link">Connect Gmail</a> or 
+        <a href="{{ url_for('calendar') }}" class="alert-link">Connect Calendar</a>.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('report_period').addEventListener('change', function() {
+  const customDates = document.getElementById('custom_dates');
+  if (this.value === 'custom') {
+    customDates.style.display = 'block';
+    document.getElementById('start_date').required = true;
+    document.getElementById('end_date').required = true;
+  } else {
+    customDates.style.display = 'none';
+    document.getElementById('start_date').required = false;
+    document.getElementById('end_date').required = false;
+  }
+});
+</script>
+{% endblock %}
