@@ -817,6 +817,8 @@ def generate_report():
 
 def generate_pdf_report(data):
     """Generate PDF report using ReportLab"""
+    from xml.sax.saxutils import escape
+    
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
     story = []
@@ -832,8 +834,8 @@ def generate_pdf_report(data):
     )
     
     story.append(Paragraph("SmartOffice AI Report", title_style))
-    story.append(Paragraph(f"<b>For:</b> {data['user_name']}", styles['Normal']))
-    story.append(Paragraph(f"<b>Period:</b> {data['period']}", styles['Normal']))
+    story.append(Paragraph(f"<b>For:</b> {escape(data['user_name'])}", styles['Normal']))
+    story.append(Paragraph(f"<b>Period:</b> {escape(data['period'])}", styles['Normal']))
     story.append(Spacer(1, 0.3*inch))
     
     if data['emails']:
@@ -843,9 +845,9 @@ def generate_pdf_report(data):
         email_data = [['Date', 'From', 'Subject']]
         for email in data['emails'][:15]:
             email_data.append([
-                Paragraph(email['date'][:20], styles['Normal']),
-                Paragraph(email['sender'][:30], styles['Normal']),
-                Paragraph(email['subject'][:50], styles['Normal'])
+                Paragraph(escape(email['date'][:20]), styles['Normal']),
+                Paragraph(escape(email['sender'][:30]), styles['Normal']),
+                Paragraph(escape(email['subject'][:50]), styles['Normal'])
             ])
         
         table = Table(email_data, colWidths=[1.5*inch, 2*inch, 3*inch])
@@ -865,9 +867,10 @@ def generate_pdf_report(data):
         story.append(Paragraph(f"<b>Calendar Events ({len(data['events'])} events)</b>", styles['Heading2']))
         story.append(Spacer(1, 0.2*inch))
         
+        from xml.sax.saxutils import escape
         for event in data['events'][:15]:
-            story.append(Paragraph(f"• <b>{event['summary']}</b>", styles['Normal']))
-            story.append(Paragraph(f"  {event['start']} {event['location']}", styles['Normal']))
+            story.append(Paragraph(f"• <b>{escape(event['summary'])}</b>", styles['Normal']))
+            story.append(Paragraph(f"  {escape(event['start'])} {escape(event['location'])}", styles['Normal']))
             story.append(Spacer(1, 0.1*inch))
     
     doc.build(story)
