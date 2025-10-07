@@ -8,6 +8,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+app.config["PREFERRED_URL_SCHEME"] = "https"
 DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
 
 # OAuth configuration - Must be set as environment variables
