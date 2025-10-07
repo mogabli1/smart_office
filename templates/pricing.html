@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">Choose Your Plan</h1>
+    <p class="lead text-muted">Unlock the full power of SmartOffice AI with our subscription</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <!-- Free Plan -->
+    <div class="col-md-5 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold">Free</h3>
+            <div class="display-4 fw-bold my-3">$0<small class="fs-5 text-muted">/month</small></div>
+          </div>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Basic dashboard access</li>
+            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted me-2"></i>Email management</li>
+            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted me-2"></i>Calendar integration</li>
+            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted me-2"></i>Report generation</li>
+            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted me-2"></i>AI-powered features</li>
+          </ul>
+          <button class="btn btn-outline-secondary w-100" disabled>Current Plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium Plan -->
+    <div class="col-md-5 mb-4">
+      <div class="card shadow-lg border-primary h-100" style="border-width: 2px;">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h5 class="mb-0 fw-bold"><i class="bi bi-star-fill me-2"></i>RECOMMENDED</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold text-primary">Premium</h3>
+            <div class="display-4 fw-bold my-3">$29<small class="fs-5 text-muted">/month</small></div>
+          </div>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Full dashboard access</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Gmail inbox management</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Google Calendar integration</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>PDF/Word report generation</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>AI email prioritization</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>AI reply suggestions</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Bilingual support (EN/AR)</strong></li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>24/7 email support</li>
+          </ul>
+          <form action="{{ url_for('create_checkout_session') }}" method="POST">
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+              <i class="bi bi-credit-card me-2"></i>Subscribe Now
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-12 text-center">
+      <p class="text-muted">
+        <i class="bi bi-shield-check me-2"></i>Secure payment powered by Stripe • Cancel anytime
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+.border-primary:hover {
+  box-shadow: 0 1rem 3rem rgba(13, 110, 253, .2)!important;
+}
+</style>
+{% endblock %}

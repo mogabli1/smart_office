@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 6rem;"></i>
+      </div>
+      <h1 class="display-5 fw-bold mb-3">Payment Successful!</h1>
+      <p class="lead text-muted mb-4">
+        Welcome to SmartOffice AI Premium! Your subscription is now active.
+      </p>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h5 class="mb-3">You now have access to:</h5>
+          <ul class="list-unstyled text-start">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Gmail inbox management with AI prioritization</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Google Calendar integration</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Automated PDF/Word reports</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>AI-powered email reply suggestions</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Bilingual interface (English/Arabic)</li>
+          </ul>
+        </div>
+      </div>
+      <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-5">
+        <i class="bi bi-house-door me-2"></i>Go to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

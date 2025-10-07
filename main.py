@@ -524,6 +524,116 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
+@app.route("/pricing")
+def pricing():
+    """Show pricing plans"""
+    return render_template("pricing.html")
+
+@app.route("/create-checkout-session", methods=["POST"])
+@login_required
+def create_checkout_session():
+    """Create a Stripe checkout session for subscription"""
+    if not STRIPE_SECRET_KEY:
+        flash("Payment system is not configured.", "danger")
+        return redirect(url_for("pricing"))
+    
+    user = current_user()
+    try:
+        # Get domain for redirect URLs
+        domain = os.environ.get('REPLIT_DEV_DOMAIN')
+        if not domain:
+            domains = os.environ.get('REPLIT_DOMAINS', '')
+            if domains:
+                domain = domains.split(',')[0]
+        
+        if not domain:
+            domain = request.host
+        
+        # Create or retrieve Stripe customer
+        customer_id = user.get('stripe_customer_id')
+        if not customer_id:
+            customer = stripe.Customer.create(
+                email=user['email'],
+                name=user['name'],
+                metadata={'user_id': user['id']}
+            )
+            customer_id = customer.id
+            
+            # Save customer ID to database
+            conn = get_db()
+            conn.execute(
+                "UPDATE users SET stripe_customer_id = ? WHERE id = ?",
+                (customer_id, user['id'])
+            )
+            conn.commit()
+            conn.close()
+        
+        # Create checkout session
+        checkout_session = stripe.checkout.Session.create(
+            customer=customer_id,
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'unit_amount': 2900,  # $29.00 in cents
+                    'recurring': {
+                        'interval': 'month'
+                    },
+                    'product_data': {
+                        'name': 'SmartOffice AI Premium',
+                        'description': 'Full access to Email, Calendar, Reports & AI features',
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='subscription',
+            success_url=f'https://{domain}/success?session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=f'https://{domain}/cancel',
+            metadata={'user_id': user['id']}
+        )
+        
+        return redirect(checkout_session.url, code=303)
+        
+    except Exception as e:
+        print(f"Error creating checkout session: {e}")
+        flash(f"Payment error: {str(e)}", "danger")
+        return redirect(url_for("pricing"))
+
+@app.route("/success")
+@login_required
+def success():
+    """Handle successful payment"""
+    session_id = request.args.get('session_id')
+    
+    if session_id and STRIPE_SECRET_KEY:
+        try:
+            # Retrieve the session to confirm payment
+            checkout_session = stripe.checkout.Session.retrieve(session_id)
+            
+            if checkout_session.payment_status == 'paid':
+                user = current_user()
+                # Calculate subscription end date (30 days from now)
+                end_date = datetime.now() + timedelta(days=30)
+                
+                # Update user subscription status
+                conn = get_db()
+                conn.execute(
+                    "UPDATE users SET subscription_status = ?, subscription_end_date = ? WHERE id = ?",
+                    ('active', end_date.isoformat(), user['id'])
+                )
+                conn.commit()
+                conn.close()
+                
+                flash("Subscription activated successfully!", "success")
+        except Exception as e:
+            print(f"Error processing successful payment: {e}")
+    
+    return render_template("success.html")
+
+@app.route("/cancel")
+def cancel():
+    """Handle cancelled payment"""
+    return render_template("cancel.html")
+
 @app.route("/gmail-authorize")
 @login_required
 def gmail_authorize():
