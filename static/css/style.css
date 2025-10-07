@@ -1,0 +1,5 @@
+body { font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+.title-shadow { text-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.navbar .navbar-brand { letter-spacing: 0.3px; }
+.card { border-radius: 1rem; }
+.btn { border-radius: 0.8rem; }
