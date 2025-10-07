@@ -430,12 +430,13 @@ def current_user():
     if not uid:
         return None
     conn = get_db()
-    user = conn.execute(
-        "SELECT id, email, name, subscription_status, subscription_end_date FROM users WHERE id = ?", 
+    row = conn.execute(
+        "SELECT id, email, name, subscription_status, subscription_end_date, stripe_customer_id FROM users WHERE id = ?", 
         (uid,)
     ).fetchone()
     conn.close()
-    return user
+    # Convert sqlite3.Row to dict for easier access
+    return dict(row) if row else None
 
 def has_active_subscription(user):
     """Check if user has an active subscription"""
