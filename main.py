@@ -69,19 +69,21 @@ def get_gmail_credentials():
             return None
         
         connection = data["items"][0]
-        secrets = connection.get("secrets", {})
+        settings = connection.get("settings", {})
         
-        if not secrets:
-            print("No secrets found in connection")
+        # Try to get access token from settings structure
+        access_token = settings.get("access_token")
+        if not access_token and "oauth" in settings:
+            oauth_data = settings.get("oauth", {})
+            credentials = oauth_data.get("credentials", {})
+            access_token = credentials.get("access_token")
+        
+        if not access_token:
+            print("No access token found in connection settings")
             return None
         
-        creds = Credentials(
-            token=secrets.get("access_token"),
-            refresh_token=secrets.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=secrets.get("client_id"),
-            client_secret=secrets.get("client_secret")
-        )
+        # Create credentials with the access token
+        creds = Credentials(token=access_token)
         
         return creds
     
