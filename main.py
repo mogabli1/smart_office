@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3, os, json
+import sqlite3, os, json, requests
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -130,6 +130,64 @@ def get_gmail_service(user_id):
         return service
     except Exception as e:
         print(f"Error building Gmail service: {e}")
+        return None
+
+def get_calendar_access_token():
+    """Get Google Calendar access token from Replit connector"""
+    hostname = os.environ.get('REPLIT_CONNECTORS_HOSTNAME')
+    repl_identity = os.environ.get('REPL_IDENTITY')
+    web_repl_renewal = os.environ.get('WEB_REPL_RENEWAL')
+    
+    x_replit_token = None
+    if repl_identity:
+        x_replit_token = 'repl ' + repl_identity
+    elif web_repl_renewal:
+        x_replit_token = 'depl ' + web_repl_renewal
+    
+    if not hostname or not x_replit_token:
+        return None
+    
+    try:
+        url = f'https://{hostname}/api/v2/connection?include_secrets=true&connector_names=google-calendar'
+        headers = {
+            'Accept': 'application/json',
+            'X_REPLIT_TOKEN': x_replit_token
+        }
+        
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        
+        data = response.json()
+        items = data.get('items', [])
+        
+        if not items:
+            return None
+        
+        connection_settings = items[0]
+        access_token = connection_settings.get('settings', {}).get('access_token')
+        
+        if not access_token:
+            access_token = connection_settings.get('settings', {}).get('oauth', {}).get('credentials', {}).get('access_token')
+        
+        return access_token
+    except Exception as e:
+        print(f"Error fetching calendar access token: {e}")
+        return None
+
+def get_calendar_service():
+    """Get authenticated Google Calendar service using Replit connector"""
+    access_token = get_calendar_access_token()
+    
+    if not access_token:
+        return None
+    
+    try:
+        from google.oauth2.credentials import Credentials as OAuth2Credentials
+        creds = OAuth2Credentials(token=access_token)
+        service = build('calendar', 'v3', credentials=creds)
+        return service
+    except Exception as e:
+        print(f"Error building Calendar service: {e}")
         return None
 
 def current_user():
@@ -324,7 +382,54 @@ def email():
 @app.route("/calendar")
 @login_required
 def calendar():
-    return render_template("feature.html", title="Calendar", subtitle="Google Calendar integration coming soon…")
+    user = current_user()
+    calendar_service = get_calendar_service()
+    
+    if not calendar_service:
+        return render_template("calendar.html", user=user, events=[], connected=False)
+    
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        events_result = calendar_service.events().list(
+            calendarId='primary',
+            timeMin=now,
+            maxResults=20,
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+        
+        events = events_result.get('items', [])
+        
+        formatted_events = []
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            end = event['end'].get('dateTime', event['end'].get('date'))
+            
+            try:
+                if 'T' in start:
+                    start_dt = datetime.fromisoformat(start.replace('Z', '+00:00'))
+                    start_formatted = start_dt.strftime('%b %d, %Y at %I:%M %p')
+                else:
+                    start_dt = datetime.fromisoformat(start)
+                    start_formatted = start_dt.strftime('%b %d, %Y')
+            except:
+                start_formatted = start
+            
+            formatted_events.append({
+                'id': event['id'],
+                'summary': event.get('summary', 'No Title'),
+                'start': start_formatted,
+                'description': event.get('description', ''),
+                'location': event.get('location', ''),
+                'htmlLink': event.get('htmlLink', '')
+            })
+        
+        return render_template("calendar.html", user=user, events=formatted_events, connected=True)
+    
+    except Exception as e:
+        print(f"Error fetching calendar events: {str(e)}")
+        flash(f"Error fetching calendar events: {str(e)}", "danger")
+        return render_template("calendar.html", user=user, events=[], connected=False)
 
 @app.route("/reports")
 @login_required
