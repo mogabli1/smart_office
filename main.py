@@ -32,8 +32,8 @@ def init_db():
 with app.app_context():
     init_db()
 
-def get_gmail_access_token():
-    """Get Gmail access token from Replit Connectors"""
+def get_gmail_credentials():
+    """Get Gmail credentials from Replit Connectors"""
     hostname = os.environ.get("REPLIT_CONNECTORS_HOSTNAME")
     repl_identity = os.environ.get("REPL_IDENTITY")
     web_repl_renewal = os.environ.get("WEB_REPL_RENEWAL")
@@ -55,28 +55,52 @@ def get_gmail_access_token():
             f"https://{hostname}/api/v2/connection?include_secrets=true&connector_names=google-mail",
             headers={
                 "Accept": "application/json",
-                "X_REPLIT_TOKEN": x_replit_token
+                "X-Replit-Token": x_replit_token
             }
         )
+        
+        if response.status_code != 200:
+            print(f"Connector API returned status {response.status_code}")
+            return None
+        
         data = response.json()
-        if data and "items" in data and len(data["items"]) > 0:
-            connection = data["items"][0]
-            return connection.get("settings", {}).get("access_token")
-    except Exception as e:
-        print(f"Error getting Gmail token: {e}")
-        return None
+        if not data or "items" not in data or len(data["items"]) == 0:
+            print("No Gmail connection found in connector response")
+            return None
+        
+        connection = data["items"][0]
+        secrets = connection.get("secrets", {})
+        
+        if not secrets:
+            print("No secrets found in connection")
+            return None
+        
+        creds = Credentials(
+            token=secrets.get("access_token"),
+            refresh_token=secrets.get("refresh_token"),
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=secrets.get("client_id"),
+            client_secret=secrets.get("client_secret")
+        )
+        
+        return creds
     
-    return None
+    except Exception as e:
+        print(f"Error getting Gmail credentials: {e}")
+        return None
 
 def get_gmail_service():
     """Get authenticated Gmail service"""
-    access_token = get_gmail_access_token()
-    if not access_token:
+    creds = get_gmail_credentials()
+    if not creds:
         return None
     
-    creds = Credentials(token=access_token)
-    service = build('gmail', 'v1', credentials=creds)
-    return service
+    try:
+        service = build('gmail', 'v1', credentials=creds)
+        return service
+    except Exception as e:
+        print(f"Error building Gmail service: {e}")
+        return None
 
 def current_user():
     uid = session.get("user_id")
