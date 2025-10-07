@@ -196,7 +196,7 @@ def logout():
 @login_required
 def debug_oauth():
     """Debug endpoint to show OAuth configuration"""
-    redirect_uri = url_for('oauth2callback', _external=True)
+    redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
     return f"""
     <h2>OAuth Debug Info</h2>
     <p><strong>Client ID:</strong> {GOOGLE_CLIENT_ID or 'NOT SET'}</p>
@@ -218,7 +218,7 @@ def gmail_authorize():
         flash("Gmail integration is not configured. Please contact administrator.", "danger")
         return redirect(url_for('email'))
     
-    redirect_uri = url_for('oauth2callback', _external=True)
+    redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
     print(f"[OAuth] Starting flow with redirect_uri: {redirect_uri}")
     print(f"[OAuth] Client ID: {GOOGLE_CLIENT_ID[:20]}...")
     
@@ -259,7 +259,7 @@ def oauth2callback():
         return redirect(url_for('login'))
     
     state = session.get('oauth_state')
-    redirect_uri = url_for('oauth2callback', _external=True)
+    redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
     
     flow = Flow.from_client_config(
         {
