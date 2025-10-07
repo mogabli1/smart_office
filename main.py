@@ -275,13 +275,22 @@ def oauth2callback():
         redirect_uri=redirect_uri
     )
     
-    flow.fetch_token(authorization_response=request.url)
+    authorization_response = request.url.replace('http://', 'https://')
+    print(f"[OAuth Callback] Authorization response URL: {authorization_response[:100]}...")
     
-    credentials = flow.credentials
-    save_user_gmail_credentials(user['id'], credentials)
-    
-    flash("Gmail connected successfully!", "success")
-    return redirect(url_for('email'))
+    try:
+        flow.fetch_token(authorization_response=authorization_response)
+        
+        credentials = flow.credentials
+        save_user_gmail_credentials(user['id'], credentials)
+        
+        flash("Gmail connected successfully!", "success")
+        print(f"[OAuth Success] User {user['email']} connected Gmail successfully")
+        return redirect(url_for('email'))
+    except Exception as e:
+        print(f"[OAuth ERROR] Failed to fetch token: {e}")
+        flash(f"Failed to connect Gmail: {str(e)}", "danger")
+        return redirect(url_for('email'))
 
 @app.route("/email")
 @login_required
