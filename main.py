@@ -213,29 +213,41 @@ def gmail_authorize():
     """Start OAuth flow for Gmail"""
     user = current_user()
     
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+        flash("Gmail integration is not configured. Please contact administrator.", "danger")
+        return redirect(url_for('email'))
+    
     redirect_uri = url_for('oauth2callback', _external=True)
+    print(f"[OAuth] Starting flow with redirect_uri: {redirect_uri}")
+    print(f"[OAuth] Client ID: {GOOGLE_CLIENT_ID[:20]}...")
     
-    flow = Flow.from_client_config(
-        {
-            "web": {
-                "client_id": GOOGLE_CLIENT_ID,
-                "client_secret": GOOGLE_CLIENT_SECRET,
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-            }
-        },
-        scopes=SCOPES,
-        redirect_uri=redirect_uri
-    )
-    
-    authorization_url, state = flow.authorization_url(
-        access_type='offline',
-        include_granted_scopes='true',
-        prompt='consent'
-    )
-    
-    session['oauth_state'] = state
-    return redirect(authorization_url)
+    try:
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": GOOGLE_CLIENT_ID,
+                    "client_secret": GOOGLE_CLIENT_SECRET,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                }
+            },
+            scopes=SCOPES,
+            redirect_uri=redirect_uri
+        )
+        
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true',
+            prompt='consent'
+        )
+        
+        print(f"[OAuth] Authorization URL generated: {authorization_url[:100]}...")
+        session['oauth_state'] = state
+        return redirect(authorization_url)
+    except Exception as e:
+        print(f"[OAuth ERROR] Failed to start authorization: {e}")
+        flash(f"OAuth configuration error: {str(e)}", "danger")
+        return redirect(url_for('email'))
 
 @app.route("/oauth2callback")
 def oauth2callback():
