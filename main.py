@@ -36,6 +36,94 @@ if OPENAI_API_KEY:
 else:
     print("INFO: OPENAI_API_KEY not set - AI features will be disabled")
 
+# Translations
+TRANSLATIONS = {
+    'en': {
+        'app_name': 'SmartOffice AI',
+        'email': 'Email',
+        'calendar': 'Calendar',
+        'reports': 'Reports',
+        'logout': 'Logout',
+        'login': 'Login',
+        'welcome': 'Welcome',
+        'dashboard': 'Dashboard',
+        'name': 'Name',
+        'password': 'Password',
+        'register': 'Register',
+        'dont_have_account': "Don't have an account?",
+        'already_have_account': 'Already have an account?',
+        'sign_up': 'Sign Up',
+        'gmail_inbox': 'Gmail Inbox',
+        'messages': 'messages',
+        'connected': 'Connected',
+        'not_connected': 'Not Connected',
+        'urgent': 'Urgent',
+        'important': 'Important',
+        'normal': 'Normal',
+        'upcoming_events': 'Upcoming Events',
+        'events': 'events',
+        'generate_report': 'Generate Report',
+        'report_period': 'Report Period',
+        'past_week': 'Past Week',
+        'past_month': 'Past Month',
+        'custom_range': 'Custom Date Range',
+        'pdf_doc': 'PDF Document',
+        'word_doc': 'Word Document',
+        'include_in_report': 'Include in Report',
+        'email_summary': 'Email Summary',
+        'calendar_events': 'Calendar Events'
+    },
+    'ar': {
+        'app_name': 'سمارت أوفيس AI',
+        'email': 'البريد الإلكتروني',
+        'calendar': 'التقويم',
+        'reports': 'التقارير',
+        'logout': 'تسجيل الخروج',
+        'login': 'تسجيل الدخول',
+        'welcome': 'مرحباً',
+        'dashboard': 'لوحة التحكم',
+        'name': 'الاسم',
+        'password': 'كلمة المرور',
+        'register': 'تسجيل',
+        'dont_have_account': 'ليس لديك حساب؟',
+        'already_have_account': 'لديك حساب بالفعل؟',
+        'sign_up': 'إنشاء حساب',
+        'gmail_inbox': 'صندوق وارد Gmail',
+        'messages': 'رسائل',
+        'connected': 'متصل',
+        'not_connected': 'غير متصل',
+        'urgent': 'عاجل',
+        'important': 'مهم',
+        'normal': 'عادي',
+        'upcoming_events': 'الأحداث القادمة',
+        'events': 'أحداث',
+        'generate_report': 'إنشاء تقرير',
+        'report_period': 'فترة التقرير',
+        'past_week': 'الأسبوع الماضي',
+        'past_month': 'الشهر الماضي',
+        'custom_range': 'نطاق مخصص',
+        'pdf_doc': 'مستند PDF',
+        'word_doc': 'مستند Word',
+        'include_in_report': 'تضمين في التقرير',
+        'email_summary': 'ملخص البريد',
+        'calendar_events': 'أحداث التقويم'
+    }
+}
+
+def get_language():
+    """Get current language from session, default to English"""
+    return session.get('language', 'en')
+
+def t(key):
+    """Translate a key to the current language"""
+    lang = get_language()
+    return TRANSLATIONS.get(lang, TRANSLATIONS['en']).get(key, key)
+
+@app.context_processor
+def inject_language():
+    """Make translation function and language available in all templates"""
+    return dict(t=t, lang=get_language())
+
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -330,6 +418,13 @@ def login_required(f):
         return f(*args, **kwargs)
     return wrapper
 
+@app.route("/set-language/<lang>")
+def set_language(lang):
+    """Switch between English and Arabic"""
+    if lang in ['en', 'ar']:
+        session['language'] = lang
+    return redirect(request.referrer or url_for('index'))
+
 @app.route("/")
 @login_required
 def index():
@@ -491,19 +586,14 @@ def email():
                 elif header['name'] == 'Date':
                     email_info['date'] = header['value']
             
-            # TODO: Enable AI prioritization when OpenAI credits are added
-            # Temporarily disabled to ensure fast page loads without credits
-            email_info['priority'] = 'normal'
-            
-            # UNCOMMENT BELOW WHEN READY TO ACTIVATE AI:
-            # if openai_client and OPENAI_API_KEY:
-            #     email_info['priority'] = analyze_email_priority(
-            #         email_info['subject'],
-            #         email_info['sender'],
-            #         email_info['snippet']
-            #     )
-            # else:
-            #     email_info['priority'] = 'normal'
+            if openai_client and OPENAI_API_KEY:
+                email_info['priority'] = analyze_email_priority(
+                    email_info['subject'],
+                    email_info['sender'],
+                    email_info['snippet']
+                )
+            else:
+                email_info['priority'] = 'normal'
             
             emails.append(email_info)
         
