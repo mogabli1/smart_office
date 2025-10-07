@@ -12,6 +12,9 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 - Added Gunicorn for production deployment
 - Created Python .gitignore file
 - Set up deployment configuration with autoscale
+- Created professional gradient logo (purple "SO" icon)
+- **Integrated Gmail using Replit Connector** - displays real emails from user's Gmail inbox
+- Added Google API Python client libraries for Gmail integration
 
 ## Project Architecture
 
@@ -21,6 +24,8 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 - **Authentication**: Werkzeug password hashing
 - **Production Server**: Gunicorn 21.2.0
 - **Frontend**: Bootstrap 5.3.2 with custom CSS (Poppins font)
+- **Gmail Integration**: Google API Python Client with Replit Connector
+- **Logo**: Custom gradient SVG logo (purple "SO" branding)
 
 ### File Structure
 ```
@@ -29,13 +34,16 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 ├── requirements.txt        # Python dependencies
 ├── smartoffice.db         # SQLite database (auto-created)
 ├── static/
-│   └── css/
-│       └── style.css      # Custom styles
+│   ├── css/
+│   │   └── style.css      # Custom styles with logo design
+│   └── images/
+│       └── smartoffice-logo.svg  # Downloadable logo file
 ├── templates/
-│   ├── base.html          # Base template with navbar
+│   ├── base.html          # Base template with navbar and logo
 │   ├── index.html         # Dashboard
 │   ├── login.html         # Login page
 │   ├── register.html      # Registration page
+│   ├── email.html         # Gmail inbox display
 │   └── feature.html       # Feature placeholder pages
 └── .gitignore            # Python gitignore
 ```
@@ -52,8 +60,13 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
    - Navigation to Email, Calendar, and Reports features
    - Flash messaging for user feedback
 
-3. **Planned Integrations** (Placeholder pages currently)
-   - Email: Gmail API integration
+3. **Gmail Integration** (ACTIVE)
+   - Connected via Replit Gmail Connector
+   - Displays user's inbox (last 15 emails)
+   - Shows subject, sender, date, and snippet
+   - Automatic token refresh for seamless authentication
+
+4. **Planned Integrations** (Placeholder pages)
    - Calendar: Google Calendar integration
    - Reports: Weekly PDF/Word report generation
 
