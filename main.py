@@ -1518,6 +1518,261 @@ def terms():
     """Terms of Service page"""
     return render_template('terms.html')
 
+@app.route("/download-stripe-live-guide")
+def download_stripe_live_guide():
+    """Generate Word document with Stripe test-to-live guide"""
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('Stripe: Test Mode to Live Mode Guide', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    doc.add_paragraph('SmartOffice AI - Payment Processing Setup')
+    doc.add_paragraph('Last Updated: October 8, 2025')
+    doc.add_paragraph()
+    
+    # Current Status
+    doc.add_heading('📊 Current Status (Test Mode)', level=1)
+    p = doc.add_paragraph()
+    p.add_run('✅ Test API key configured: STRIPE_SECRET_KEY (starts with sk_test_...)\n')
+    p.add_run('✅ Accepts test cards: 4242 4242 4242 4242\n')
+    p.add_run('✅ No real money processed\n')
+    p.add_run('✅ Perfect for development and testing')
+    doc.add_paragraph()
+    
+    # Why Test Mode
+    doc.add_heading('Why Test Mode First?', level=2)
+    p = doc.add_paragraph()
+    p.add_run('• Test your payment flow safely\n')
+    p.add_run('• Debug issues without real money\n')
+    p.add_run('• Verify subscription logic works\n')
+    p.add_run('• Train your team on the system')
+    doc.add_paragraph()
+    
+    # Steps to Go Live
+    doc.add_heading('🚀 Steps to Switch to Live Mode', level=1)
+    
+    doc.add_heading('STEP 1: Activate Your Stripe Account (One-time setup)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Go to: https://dashboard.stripe.com\n')
+    p.add_run('2. Click "Activate your account" in the top banner\n')
+    p.add_run('3. Complete the activation form with:\n')
+    p.add_run('   • Business information (name, address, type)\n')
+    p.add_run('   • Bank account for payouts\n')
+    p.add_run('   • Identity verification (ID/passport)\n')
+    p.add_run('   • Tax information (EIN/SSN)\n')
+    p.add_run('4. Wait for Stripe approval (usually instant, sometimes 1-2 days)')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 2: Get Your Live API Key', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Once activated, go to: https://dashboard.stripe.com/apikeys\n')
+    p.add_run('2. Toggle to "Live mode" (switch in top left)\n')
+    p.add_run('3. Click "Reveal live key" for the "Secret key"\n')
+    p.add_run('4. Copy the live key (starts with sk_live_...)\n')
+    p.add_run('5. Keep this key VERY secure - it processes real money!')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 3: Update Replit Secret', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. In your Replit project, click "Tools" → "Secrets"\n')
+    p.add_run('2. Find STRIPE_SECRET_KEY\n')
+    p.add_run('3. Click "Edit"\n')
+    p.add_run('4. Replace test key with live key: sk_live_...\n')
+    p.add_run('5. Click "Save"\n')
+    p.add_run('6. Restart your app workflow')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 4: Update Pricing (Optional)', level=2)
+    doc.add_paragraph('If you want to change the subscription price:')
+    doc.add_paragraph()
+    p = doc.add_paragraph()
+    p.add_run('Option A - Keep Dynamic Pricing (Recommended):\n')
+    p.add_run('The code is already set to use dynamic pricing. Just change the amount:\n\n')
+    p.add_run('In main.py around line 730, find:\n')
+    p.add_run("'unit_amount': 2900,  # $29.00 in cents\n\n")
+    p.add_run('Change to your price:\n')
+    p.add_run("'unit_amount': 4900,  # $49.00 in cents\n")
+    p.add_run("'unit_amount': 1900,  # $19.00 in cents\n\n")
+    p.add_run('Option B - Use Stripe Products (Advanced):\n')
+    p.add_run('1. Create a product in Stripe dashboard\n')
+    p.add_run('2. Set your price and get the price ID (price_...)\n')
+    p.add_run('3. Update code to use the price ID instead')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 5: Test Live Mode', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Try subscribing with a REAL credit card (yours)\n')
+    p.add_run('2. Verify the charge appears in Stripe dashboard\n')
+    p.add_run('3. Check your app grants Premium access\n')
+    p.add_run('4. Cancel the subscription immediately if just testing\n')
+    p.add_run('5. Verify refund processes correctly')
+    doc.add_paragraph()
+    
+    # What Changes
+    doc.add_heading('✅ What Changes When You Go Live?', level=1)
+    
+    table = doc.add_table(rows=5, cols=2)
+    table.style = 'Light Grid Accent 1'
+    
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Aspect'
+    hdr_cells[1].text = 'Change'
+    
+    table.rows[1].cells[0].text = 'API Key'
+    table.rows[1].cells[1].text = 'sk_test_... → sk_live_...'
+    
+    table.rows[2].cells[0].text = 'Cards Accepted'
+    table.rows[2].cells[1].text = 'Test cards → Real credit/debit cards'
+    
+    table.rows[3].cells[0].text = 'Money Processing'
+    table.rows[3].cells[1].text = 'Fake → Real money transfers'
+    
+    table.rows[4].cells[0].text = 'Payouts'
+    table.rows[4].cells[1].text = 'None → Bank deposits (2-7 days)'
+    
+    doc.add_paragraph()
+    
+    # Security Notes
+    doc.add_heading('🔐 Critical Security Notes', level=1)
+    
+    doc.add_heading('API Key Safety:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ Test key (sk_test_...): Safe to use during development\n')
+    p.add_run('⚠️ Live key (sk_live_...): PROCESSES REAL MONEY - Keep secret!\n\n')
+    p.add_run('Security Best Practices:\n')
+    p.add_run('• Never commit live keys to code or GitHub\n')
+    p.add_run('• Always use Replit Secrets for API keys\n')
+    p.add_run('• Rotate keys if ever exposed\n')
+    p.add_run('• Use different keys for development vs production')
+    doc.add_paragraph()
+    
+    # Test Cards Reference
+    doc.add_heading('📋 Test Cards Reference (Test Mode Only)', level=1)
+    
+    table = doc.add_table(rows=5, cols=2)
+    table.style = 'Light Grid Accent 1'
+    
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Card Number'
+    hdr_cells[1].text = 'Result'
+    
+    table.rows[1].cells[0].text = '4242 4242 4242 4242'
+    table.rows[1].cells[1].text = 'Success'
+    
+    table.rows[2].cells[0].text = '4000 0000 0000 0002'
+    table.rows[2].cells[1].text = 'Card declined'
+    
+    table.rows[3].cells[0].text = '4000 0000 0000 9995'
+    table.rows[3].cells[1].text = 'Insufficient funds'
+    
+    table.rows[4].cells[0].text = 'Any future expiry, CVV, ZIP'
+    table.rows[4].cells[1].text = 'Works with all test cards'
+    
+    doc.add_paragraph()
+    doc.add_paragraph('Note: Test cards ONLY work in test mode. Live mode requires real cards.')
+    doc.add_paragraph()
+    
+    # Stripe Fees
+    doc.add_heading('💰 Stripe Fees & Payouts', level=1)
+    
+    doc.add_heading('Transaction Fees:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('• 2.9% + $0.30 per successful charge\n')
+    p.add_run('• Example: $29 subscription → $1.14 fee → You keep $27.86\n')
+    p.add_run('• Example: $49 subscription → $1.72 fee → You keep $47.28\n')
+    p.add_run('• No monthly fees, only per-transaction')
+    doc.add_paragraph()
+    
+    doc.add_heading('Payouts:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('• Automatic daily payouts to your bank account\n')
+    p.add_run('• 2-7 business days for funds to arrive\n')
+    p.add_run('• Can change payout schedule in Stripe dashboard\n')
+    p.add_run('• View all payouts at: https://dashboard.stripe.com/payouts')
+    doc.add_paragraph()
+    
+    # Switching Back
+    doc.add_heading('🔄 Switching Between Test and Live', level=1)
+    
+    doc.add_paragraph('You can switch back and forth anytime:')
+    doc.add_paragraph()
+    
+    doc.add_heading('To Switch to Test Mode:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Get test key from: https://dashboard.stripe.com/test/apikeys\n')
+    p.add_run('2. Update STRIPE_SECRET_KEY in Replit Secrets\n')
+    p.add_run('3. Restart app\n')
+    p.add_run('4. Use test cards: 4242 4242 4242 4242')
+    doc.add_paragraph()
+    
+    doc.add_heading('To Switch to Live Mode:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Get live key from: https://dashboard.stripe.com/apikeys\n')
+    p.add_run('2. Update STRIPE_SECRET_KEY in Replit Secrets\n')
+    p.add_run('3. Restart app\n')
+    p.add_run('4. Use real credit cards')
+    doc.add_paragraph()
+    
+    # Recommendations
+    doc.add_heading('💡 Recommendations', level=1)
+    
+    doc.add_heading('Before Going Live:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ Test entire subscription flow multiple times\n')
+    p.add_run('✅ Test cancellation process\n')
+    p.add_run('✅ Verify Premium features activate correctly\n')
+    p.add_run('✅ Check email notifications work\n')
+    p.add_run('✅ Review Stripe dashboard and understand reports\n')
+    p.add_run('✅ Set up bank account for payouts')
+    doc.add_paragraph()
+    
+    doc.add_heading('After Going Live:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ Monitor Stripe dashboard daily\n')
+    p.add_run('✅ Watch for failed payments or disputes\n')
+    p.add_run('✅ Keep test mode for development/staging\n')
+    p.add_run('✅ Enable Stripe email notifications\n')
+    p.add_run('✅ Set up webhook monitoring (advanced)')
+    doc.add_paragraph()
+    
+    # Quick Reference
+    doc.add_heading('📚 Quick Reference Links', level=1)
+    
+    p = doc.add_paragraph()
+    p.add_run('Stripe Dashboard: https://dashboard.stripe.com\n')
+    p.add_run('API Keys (Live): https://dashboard.stripe.com/apikeys\n')
+    p.add_run('API Keys (Test): https://dashboard.stripe.com/test/apikeys\n')
+    p.add_run('Payouts: https://dashboard.stripe.com/payouts\n')
+    p.add_run('Customers: https://dashboard.stripe.com/customers\n')
+    p.add_run('Subscriptions: https://dashboard.stripe.com/subscriptions\n')
+    p.add_run('Stripe Docs: https://stripe.com/docs')
+    doc.add_paragraph()
+    
+    # Summary
+    doc.add_heading('✨ Summary', level=1)
+    
+    p = doc.add_paragraph()
+    p.add_run('Going live is simple:\n\n')
+    p.add_run('1️⃣ Activate Stripe account (one-time)\n')
+    p.add_run('2️⃣ Get live API key (sk_live_...)\n')
+    p.add_run('3️⃣ Update Replit Secret\n')
+    p.add_run('4️⃣ Restart app\n')
+    p.add_run('5️⃣ Test with real card\n\n')
+    p.add_run('That\'s it! You\'re now accepting real payments. 💳')
+    doc.add_paragraph()
+    
+    doc.add_paragraph('Remember: Keep test mode for development, use live mode for real customers!')
+    
+    # Generate file
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    
+    filename = "SmartOffice_Stripe_Live_Guide.docx"
+    return send_file(buffer, as_attachment=True, download_name=filename, 
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
 @app.route("/download-app-status")
 def download_app_status():
     """Generate Word document with app status and next steps"""
