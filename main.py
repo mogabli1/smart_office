@@ -571,6 +571,7 @@ def create_checkout_session():
             conn.close()
         
         # Create checkout session
+        print(f"Creating Stripe checkout for user {user['id']} with domain {domain}")
         checkout_session = stripe.checkout.Session.create(
             customer=customer_id,
             line_items=[{
@@ -592,6 +593,12 @@ def create_checkout_session():
             cancel_url=f'https://{domain}/cancel',
             metadata={'user_id': user['id']}
         )
+        
+        print(f"Stripe checkout session created: {checkout_session.id}")
+        print(f"Redirect URL: {checkout_session.url}")
+        
+        # Store session URL in session for debugging
+        session['stripe_checkout_url'] = checkout_session.url
         
         return redirect(checkout_session.url, code=303)
         
