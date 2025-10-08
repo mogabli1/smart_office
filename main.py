@@ -1508,5 +1508,15 @@ def generate_docx_report(data):
     return send_file(buffer, as_attachment=True, download_name=filename, 
                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
+@app.route("/privacy")
+def privacy():
+    """Privacy Policy page"""
+    return render_template('privacy.html')
+
+@app.route("/terms")
+def terms():
+    """Terms of Service page"""
+    return render_template('terms.html')
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
