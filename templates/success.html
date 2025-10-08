@@ -29,4 +29,15 @@
     </div>
   </div>
 </div>
+
+<script>
+// Auto-refresh parent window if opened in new tab
+if (window.opener) {
+    // Wait 2 seconds to let user see success message, then refresh parent and close
+    setTimeout(function() {
+        window.opener.location.reload();
+        window.close();
+    }, 2000);
+}
+</script>
 {% endblock %}
