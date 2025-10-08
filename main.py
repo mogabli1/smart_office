@@ -908,12 +908,15 @@ def oauth2callback():
         <body>
             <h3>Gmail connected successfully! Closing...</h3>
             <script>
-                if (window.opener) {
-                    window.opener.location.reload();
-                    window.close();
-                } else {
-                    window.location.href = '/email';
-                }
+                setTimeout(function() {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.reload();
+                        window.close();
+                    } else {
+                        localStorage.setItem('gmail_connected', Date.now().toString());
+                        window.location.href = '/email';
+                    }
+                }, 1000);
             </script>
         </body>
         </html>
@@ -1004,12 +1007,15 @@ def calendar_oauth2callback():
         <body>
             <h3>Calendar connected successfully! Closing...</h3>
             <script>
-                if (window.opener) {
-                    window.opener.location.reload();
-                    window.close();
-                } else {
-                    window.location.href = '/calendar';
-                }
+                setTimeout(function() {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.reload();
+                        window.close();
+                    } else {
+                        localStorage.setItem('calendar_connected', Date.now().toString());
+                        window.location.href = '/calendar';
+                    }
+                }, 1000);
             </script>
         </body>
         </html>

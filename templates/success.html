@@ -32,12 +32,18 @@
 
 <script>
 // Auto-refresh parent window if opened in new tab
-if (window.opener) {
-    // Wait 2 seconds to let user see success message, then refresh parent and close
-    setTimeout(function() {
+setTimeout(function() {
+    // Method 1: Try window.opener
+    if (window.opener && !window.opener.closed) {
         window.opener.location.reload();
         window.close();
-    }, 2000);
-}
+    } 
+    // Method 2: Use localStorage to signal parent to refresh
+    else {
+        localStorage.setItem('payment_success', Date.now().toString());
+        // Redirect to dashboard if opener not available
+        window.location.href = '/';
+    }
+}, 2000);
 </script>
 {% endblock %}
