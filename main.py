@@ -19,6 +19,10 @@ import stripe
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 app.config["PREFERRED_URL_SCHEME"] = "https"
+# Session cookie configuration for OAuth redirects
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
 DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
 
 # Stripe configuration
