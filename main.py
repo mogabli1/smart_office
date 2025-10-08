@@ -252,6 +252,17 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS calendar_tokens (
+            user_id INTEGER PRIMARY KEY,
+            token TEXT NOT NULL,
+            refresh_token TEXT,
+            token_uri TEXT,
+            token_expiry TEXT,
+            scopes TEXT,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    """)
     
     # Add subscription columns to existing users if they don't exist
     try:
@@ -351,6 +362,86 @@ def get_gmail_service(user_id):
         return service
     except Exception as e:
         print(f"Error building Gmail service: {e}")
+        return None
+
+def get_user_calendar_credentials(user_id):
+    """Get Calendar credentials from database for a specific user"""
+    conn = get_db()
+    token_row = conn.execute("SELECT * FROM calendar_tokens WHERE user_id = ?", (user_id,)).fetchone()
+    conn.close()
+    
+    if not token_row:
+        return None
+    
+    from datetime import datetime
+    expiry = None
+    if token_row['token_expiry']:
+        try:
+            expiry = datetime.fromisoformat(token_row['token_expiry'])
+        except:
+            pass
+    
+    creds = Credentials(
+        token=token_row['token'],
+        refresh_token=token_row['refresh_token'],
+        token_uri=token_row['token_uri'],
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scopes=json.loads(token_row['scopes']) if token_row['scopes'] else [],
+        expiry=expiry
+    )
+    
+    # Refresh token if expired
+    if creds.expired and creds.refresh_token:
+        from google.auth.transport.requests import Request
+        creds.refresh(Request())
+        save_user_calendar_credentials(user_id, creds)
+    
+    return creds
+
+def save_user_calendar_credentials(user_id, credentials):
+    """Save Calendar credentials to database for a specific user"""
+    conn = get_db()
+    
+    expiry_str = None
+    if credentials.expiry:
+        expiry_str = credentials.expiry.isoformat()
+    
+    refresh_token = credentials.refresh_token
+    if not refresh_token:
+        existing = conn.execute(
+            "SELECT refresh_token FROM calendar_tokens WHERE user_id = ?", 
+            (user_id,)
+        ).fetchone()
+        if existing:
+            refresh_token = existing['refresh_token']
+    
+    conn.execute("""
+        INSERT OR REPLACE INTO calendar_tokens 
+        (user_id, token, refresh_token, token_uri, token_expiry, scopes)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        credentials.token,
+        refresh_token,
+        credentials.token_uri,
+        expiry_str,
+        json.dumps(credentials.scopes) if credentials.scopes else '[]'
+    ))
+    conn.commit()
+    conn.close()
+
+def get_calendar_service_for_user(user_id):
+    """Get authenticated Calendar service for a specific user"""
+    creds = get_user_calendar_credentials(user_id)
+    if not creds:
+        return None
+    
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        return service
+    except Exception as e:
+        print(f"Error building Calendar service: {e}")
         return None
 
 def get_calendar_access_token():
@@ -811,6 +902,88 @@ def oauth2callback():
         flash(f"Failed to connect Gmail: {str(e)}", "danger")
         return redirect(url_for('email'))
 
+@app.route("/calendar-authorize")
+@login_required
+def calendar_authorize():
+    """Start OAuth flow for Google Calendar"""
+    user = current_user()
+    
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+        flash("Calendar integration is not configured. Please contact administrator.", "danger")
+        return redirect(url_for('calendar'))
+    
+    redirect_uri = url_for('calendar_oauth2callback', _external=True, _scheme='https')
+    
+    calendar_scopes = ['https://www.googleapis.com/auth/calendar.readonly']
+    
+    try:
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": GOOGLE_CLIENT_ID,
+                    "client_secret": GOOGLE_CLIENT_SECRET,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                }
+            },
+            scopes=calendar_scopes,
+            redirect_uri=redirect_uri
+        )
+        
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true',
+            prompt='consent'
+        )
+        
+        session['calendar_oauth_state'] = state
+        return redirect(authorization_url)
+    except Exception as e:
+        print(f"[Calendar OAuth ERROR] Failed to start authorization: {e}")
+        flash(f"Calendar OAuth configuration error: {str(e)}", "danger")
+        return redirect(url_for('calendar'))
+
+@app.route("/calendar-oauth2callback")
+def calendar_oauth2callback():
+    """Handle OAuth callback from Google for Calendar"""
+    user = current_user()
+    if not user:
+        flash("Please log in first.", "warning")
+        return redirect(url_for('login'))
+    
+    state = session.get('calendar_oauth_state')
+    redirect_uri = url_for('calendar_oauth2callback', _external=True, _scheme='https')
+    
+    calendar_scopes = ['https://www.googleapis.com/auth/calendar.readonly']
+    
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        },
+        scopes=calendar_scopes,
+        state=state,
+        redirect_uri=redirect_uri
+    )
+    
+    authorization_response = request.url.replace('http://', 'https://')
+    
+    try:
+        flow.fetch_token(authorization_response=authorization_response)
+        
+        credentials = flow.credentials
+        save_user_calendar_credentials(user['id'], credentials)
+        
+        flash("Calendar connected successfully!", "success")
+        return redirect(url_for('calendar'))
+    except Exception as e:
+        flash(f"Failed to connect Calendar: {str(e)}", "danger")
+        return redirect(url_for('calendar'))
+
 @app.route("/email")
 @login_required
 def email():
@@ -1022,7 +1195,8 @@ def calendar():
         flash("Calendar features require a Premium subscription.", "warning")
         return redirect(url_for('pricing'))
     
-    calendar_service = get_calendar_service()
+    # Use per-user calendar service instead of project-level connector
+    calendar_service = get_calendar_service_for_user(user['id'])
     
     if not calendar_service:
         return render_template("calendar.html", user=user, events=[], connected=False)

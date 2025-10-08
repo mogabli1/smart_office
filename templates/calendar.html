@@ -8,11 +8,11 @@
     </div>
     {% if connected %}
     <span class="badge bg-success px-3 py-2">
-      <i class="bi bi-check-circle me-1"></i> Connected
+      <i class="bi bi-check-circle {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> {{ t('connected') }}
     </span>
     {% else %}
     <span class="badge bg-warning px-3 py-2">
-      <i class="bi bi-exclamation-circle me-1"></i> Not Connected
+      <i class="bi bi-exclamation-circle {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> {{ t('not_connected') }}
     </span>
     {% endif %}
   </div>
@@ -25,17 +25,17 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <h5 class="card-title mb-0 fw-semibold" style="color: #2c3e50;">
-              <i class="bi bi-calendar-event me-2" style="color: #7B2CBF;"></i>
+              <i class="bi bi-calendar-event {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}" style="color: #7B2CBF;"></i>
               {{ event.summary }}
             </h5>
           </div>
           <p class="text-muted mb-2">
-            <i class="bi bi-clock me-1"></i>
+            <i class="bi bi-clock {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
             <strong>{{ event.start }}</strong>
           </p>
           {% if event.location %}
           <p class="text-muted mb-2">
-            <i class="bi bi-geo-alt me-1"></i>
+            <i class="bi bi-geo-alt {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
             {{ event.location }}
           </p>
           {% endif %}
@@ -44,7 +44,7 @@
           {% endif %}
           {% if event.htmlLink %}
           <a href="{{ event.htmlLink }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-            <i class="bi bi-box-arrow-up-right me-1"></i> View in Google Calendar
+            <i class="bi bi-box-arrow-up-right {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> View in Google Calendar
           </a>
           {% endif %}
         </div>
@@ -60,10 +60,13 @@
           <i class="bi bi-calendar-x" style="font-size: 4rem; color: #6c757d;"></i>
         </div>
         <h4 class="mb-3">Google Calendar Not Connected</h4>
-        <p class="text-muted mb-4">The Google Calendar integration has been set up at the project level.</p>
+        <p class="text-muted mb-4">Connect your Google Calendar to view upcoming events and manage your schedule.</p>
+        <a href="{{ url_for('calendar_authorize') }}" class="btn btn-primary btn-lg">
+          <i class="bi bi-google {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>Connect Google Calendar
+        </a>
         <p class="text-muted small mt-3 mb-0">
-          <i class="bi bi-info-circle me-1"></i>
-          Using Replit's secure connector for Google Calendar
+          <i class="bi bi-shield-check {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+          Your data is secure and only you can access your calendar
         </p>
       {% else %}
         <div class="mb-4">
