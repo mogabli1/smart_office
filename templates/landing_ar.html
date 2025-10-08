@@ -4,50 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>سمارت أوفيس AI – مساعدك الإداري الذكي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing-ar.css') }}" />
 </head>
 <body>
+  <div class="lang-switch-top">
+    <a href="{{ url_for('landing') }}" class="lang-btn">
+      <span class="flag">🇬🇧</span>
+      <span>English</span>
+    </a>
+  </div>
+
   <header class="fade-in">
     <div class="logo">SO</div>
     <h1>سمارت أوفيس AI</h1>
-    <p>مساعدك الإداري الذكي</p>
-    <div class="lang-switch">
-      <a href="{{ url_for('landing') }}">English 🇬🇧</a>
+    <p class="subtitle">مساعدك الإداري الذكي</p>
+    <p class="description">
+      حوّل سير عملك اليومي مع إدارة البريد الإلكتروني المدعومة بالذكاء الاصطناعي، وتكامل التقويم الذكي، 
+      وإنشاء التقارير الآلية. مصمم للمهنيين المشغولين وأصحاب الأعمال الصغيرة.
+    </p>
+    <div class="buttons">
+      <a href="{{ url_for('login') }}" class="btn btn-primary">ابدأ مجاناً</a>
+      <a href="#features" class="btn btn-secondary">اعرف المزيد</a>
     </div>
   </header>
 
-  <section class="intro fade-in">
-    <p>
-      سمارت أوفيس AI يساعدك على تنظيم بريدك الإلكتروني وجدولة الاجتماعات وإنشاء التقارير الاحترافية تلقائيًا باستخدام تقنيات الذكاء الاصطناعي.
-    </p>
-    <div class="buttons">
-      <a href="{{ url_for('login') }}" class="btn">جرب النسخة التجريبية</a>
-      <a href="{{ url_for('register') }}" class="btn secondary">انضم مبكرًا</a>
+  <section class="features fade-in" id="features">
+    <h2 class="section-title">ميزات قوية لتعزيز إنتاجيتك</h2>
+    <p class="section-subtitle">كل ما تحتاجه لإدارة مهام مكتبك بكفاءة</p>
+    
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">📧</div>
+        <h3>تنظيم البريد الإلكتروني بالذكاء الاصطناعي</h3>
+        <p>تصنيف الرسائل تلقائياً حسب الأولوية (عاجل، مهم، عادي) باستخدام GPT-5. لن تفوتك الرسائل المهمة بعد الآن.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>اقتراحات الرد الذكية</h3>
+        <p>احصل على ردود بريد إلكتروني من الذكاء الاصطناعي بثلاثة نبرات مختلفة (رسمي، ودي، مختصر). وفر ساعات في كتابة الرسائل.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <h3>تكامل تقويم جوجل</h3>
+        <p>مزامنة سلسة مع تقويم جوجل الخاص بك. اعرض الأحداث القادمة، وأدر الاجتماعات، وابق منظماً بسهولة.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>إنشاء التقارير الآلية</h3>
+        <p>أنشئ تقارير احترافية بصيغة PDF و Word تحتوي على ملخصات البريد وبيانات التقويم في ثوانٍ. صدّر وشارك فوراً.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌍</div>
+        <h3>واجهة ثنائية اللغة</h3>
+        <p>دعم كامل للغة الإنجليزية والعربية مع تخطيط RTL. بدّل اللغات بسلاسة لتتناسب مع تفضيلاتك.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <h3>آمن وخاص</h3>
+        <p>بياناتك تبقى لك. يربط كل مستخدم حساباته الخاصة في Gmail والتقويم. لا توجد بيانات مشتركة، خصوصية كاملة.</p>
+      </div>
     </div>
   </section>
 
-  <section class="features fade-in">
-    <div class="feature">
-      <h3>📧 البريد الذكي</h3>
-      <p>تنظيم وتلخيص البريد الإلكتروني تلقائيًا.</p>
+  <section class="pricing-preview fade-in">
+    <h2 class="section-title">أسعار بسيطة وشفافة</h2>
+    <p class="section-subtitle">ابدأ مجاناً. قم بالترقية عندما تكون جاهزاً.</p>
+    <div class="pricing-card">
+      <div class="price">$29<span>/شهرياً</span></div>
+      <ul class="benefits">
+        <li>✓ تنظيم بريد إلكتروني غير محدود</li>
+        <li>✓ اقتراحات الرد بالذكاء الاصطناعي</li>
+        <li>✓ تكامل التقويم</li>
+        <li>✓ التقارير الآلية</li>
+        <li>✓ دعم ثنائي اللغة</li>
+        <li>✓ دعم عملاء على مدار الساعة</li>
+      </ul>
+      <a href="{{ url_for('register') }}" class="btn btn-primary">ابدأ تجربة مجانية</a>
     </div>
-    <div class="feature">
-      <h3>📅 التقويم الذكي</h3>
-      <p>إدارة وجدولة الاجتماعات بسهولة.</p>
-    </div>
-    <div class="feature">
-      <h3>📊 التقارير الذكية</h3>
-      <p>إنشاء تقارير احترافية في ثوانٍ.</p>
-    </div>
+  </section>
+
+  <section class="cta-section fade-in">
+    <h2>هل أنت مستعد لتحويل سير عملك؟</h2>
+    <p>انضم إلى مئات المهنيين الذين يوفرون بالفعل أكثر من 10 ساعات أسبوعياً</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">ابدأ الآن – مجاناً</a>
   </section>
 
   <footer class="fade-in">
-    <p>© 2025 سمارت أوفيس AI — جميع الحقوق محفوظة.</p>
-    <p>
-      <a href="{{ url_for('privacy') }}">سياسة الخصوصية</a> | 
-      <a href="{{ url_for('terms') }}">شروط الاستخدام</a> | 
-      <a href="{{ url_for('contact') }}">اتصل بنا</a>
-    </p>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo-small">SO</div>
+        <p>سمارت أوفيس AI</p>
+      </div>
+      <div class="footer-links">
+        <a href="{{ url_for('privacy') }}">سياسة الخصوصية</a>
+        <a href="{{ url_for('terms') }}">شروط الاستخدام</a>
+        <a href="{{ url_for('contact') }}">اتصل بنا</a>
+      </div>
+    </div>
+    <p class="copyright">© 2025 سمارت أوفيس AI. جميع الحقوق محفوظة.</p>
   </footer>
 </body>
 </html>
