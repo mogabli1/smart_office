@@ -901,8 +901,23 @@ def oauth2callback():
         credentials = flow.credentials
         save_user_gmail_credentials(user['id'], credentials)
         
-        flash("Gmail connected successfully!", "success")
-        return redirect(url_for('email'))
+        # Return auto-close page that refreshes parent window
+        return '''
+        <html>
+        <head><title>Gmail Connected</title></head>
+        <body>
+            <h3>Gmail connected successfully! Closing...</h3>
+            <script>
+                if (window.opener) {
+                    window.opener.location.reload();
+                    window.close();
+                } else {
+                    window.location.href = '/email';
+                }
+            </script>
+        </body>
+        </html>
+        '''
     except Exception as e:
         flash(f"Failed to connect Gmail: {str(e)}", "danger")
         return redirect(url_for('email'))
@@ -982,8 +997,23 @@ def calendar_oauth2callback():
         credentials = flow.credentials
         save_user_calendar_credentials(user['id'], credentials)
         
-        flash("Calendar connected successfully!", "success")
-        return redirect(url_for('calendar'))
+        # Return auto-close page that refreshes parent window
+        return '''
+        <html>
+        <head><title>Calendar Connected</title></head>
+        <body>
+            <h3>Calendar connected successfully! Closing...</h3>
+            <script>
+                if (window.opener) {
+                    window.opener.location.reload();
+                    window.close();
+                } else {
+                    window.location.href = '/calendar';
+                }
+            </script>
+        </body>
+        </html>
+        '''
     except Exception as e:
         flash(f"Failed to connect Calendar: {str(e)}", "danger")
         return redirect(url_for('calendar'))
