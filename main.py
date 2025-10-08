@@ -1255,7 +1255,7 @@ def reports():
         return redirect(url_for('pricing'))
     
     gmail_service = get_gmail_service(user['id'])
-    calendar_service = get_calendar_service()
+    calendar_service = get_calendar_service_for_user(user['id'])
     
     gmail_connected = bool(gmail_service)
     calendar_connected = bool(calendar_service)
@@ -1335,7 +1335,7 @@ def generate_report():
                 print(f"Error fetching emails for report: {e}")
     
     if include_calendar:
-        calendar_service = get_calendar_service()
+        calendar_service = get_calendar_service_for_user(user['id'])
         if calendar_service:
             try:
                 time_min = start_date.isoformat() + 'Z'
