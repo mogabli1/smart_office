@@ -1518,5 +1518,177 @@ def terms():
     """Terms of Service page"""
     return render_template('terms.html')
 
+@app.route("/download-cost-breakdown")
+def download_cost_breakdown():
+    """Generate Word document with cost breakdown"""
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('SmartOffice AI - Cost Breakdown & Requirements', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    doc.add_paragraph('Last Updated: October 8, 2025')
+    doc.add_paragraph()
+    
+    # Section 1: Actual Costs
+    doc.add_heading('1. Actual Monthly Costs Breakdown', level=1)
+    
+    doc.add_heading('1.1 Replit Deployment (REQUIRED)', level=2)
+    doc.add_paragraph('Cost: $3-5/month for small apps')
+    p = doc.add_paragraph()
+    p.add_run('  • $1.00 base fee/month\n')
+    p.add_run('  • Plus usage (scales with traffic)\n')
+    p.add_run('  • Example: 500 visitors/day = ~$3/month total')
+    doc.add_paragraph('What you get: Hosting, SSL, automatic scaling')
+    doc.add_paragraph('Status: ✅ Already configured')
+    doc.add_paragraph()
+    
+    doc.add_heading('1.2 Google Cloud (FREE - NO COST!)', level=2)
+    doc.add_paragraph('Cost: $0 (FREE for OAuth and APIs)')
+    doc.add_paragraph('Free tier includes:')
+    p = doc.add_paragraph()
+    p.add_run('  • Unlimited OAuth requests\n')
+    p.add_run('  • Gmail API: 1 billion quota units/day\n')
+    p.add_run('  • Calendar API: 1 million requests/day')
+    doc.add_paragraph('You only pay if you exceed limits (unlikely for SME use)')
+    doc.add_paragraph('Status: ✅ Already set up')
+    doc.add_paragraph()
+    
+    doc.add_heading('1.3 OpenAI API (PAY-AS-YOU-GO)', level=2)
+    doc.add_paragraph('Cost: $20-50/month depending on usage')
+    p = doc.add_paragraph()
+    p.add_run('  • GPT-4o: $2.50 per 1M input tokens\n')
+    p.add_run('  • NOT a subscription - pay only for what you use\n')
+    p.add_run('  • NOT ChatGPT Plus ($20/month) - Different service!')
+    doc.add_paragraph('Usage estimate: 100 emails analyzed/day ≈ $15-30/month')
+    doc.add_paragraph('Status: ✅ Already integrated, needs API credits')
+    doc.add_paragraph()
+    
+    doc.add_heading('1.4 Stripe Payments (TRANSACTION FEE ONLY)', level=2)
+    doc.add_paragraph('Monthly cost: $0')
+    doc.add_paragraph('Per transaction: 2.9% + $0.30')
+    p = doc.add_paragraph()
+    p.add_run('  • Example: $29 subscription = $1.14 fee to Stripe\n')
+    p.add_run('  • You keep: $27.86')
+    doc.add_paragraph('No monthly subscription needed')
+    doc.add_paragraph('Status: ✅ Already integrated')
+    doc.add_paragraph()
+    
+    # Section 2: Cost Summary
+    doc.add_heading('2. Total Monthly Costs Summary', level=1)
+    
+    table = doc.add_table(rows=6, cols=3)
+    table.style = 'Light Grid Accent 1'
+    
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Service'
+    hdr_cells[1].text = 'Cost'
+    hdr_cells[2].text = 'Notes'
+    
+    table.rows[1].cells[0].text = 'Replit Hosting'
+    table.rows[1].cells[1].text = '$3-5'
+    table.rows[1].cells[2].text = 'Required'
+    
+    table.rows[2].cells[0].text = 'Google Cloud'
+    table.rows[2].cells[1].text = '$0'
+    table.rows[2].cells[2].text = 'FREE tier sufficient'
+    
+    table.rows[3].cells[0].text = 'OpenAI API'
+    table.rows[3].cells[1].text = '$20-50'
+    table.rows[3].cells[2].text = 'Pay-as-you-go'
+    
+    table.rows[4].cells[0].text = 'Stripe'
+    table.rows[4].cells[1].text = '$0 + 2.9% fees'
+    table.rows[4].cells[2].text = 'Only on transactions'
+    
+    table.rows[5].cells[0].text = 'TOTAL'
+    table.rows[5].cells[1].text = '$23-55/month'
+    table.rows[5].cells[2].text = 'Covers everything'
+    
+    doc.add_paragraph()
+    
+    # Section 3: What You DON'T Need
+    doc.add_heading('3. What You DON\'T Need', level=1)
+    p = doc.add_paragraph()
+    p.add_run('❌ Google Cloud paid subscription\n')
+    p.add_run('❌ ChatGPT Plus ($20/month) - This is different from API\n')
+    p.add_run('❌ Stripe monthly subscription\n')
+    p.add_run('❌ "GPT-5" - You\'re using GPT-4o API')
+    doc.add_paragraph()
+    
+    # Section 4: Revenue Math
+    doc.add_heading('4. Revenue Math Example', level=1)
+    doc.add_paragraph('If you get 10 customers at $29/month:')
+    p = doc.add_paragraph()
+    p.add_run('  • Revenue: $290/month\n')
+    p.add_run('  • Costs: ~$50/month (Replit + OpenAI + Stripe fees)\n')
+    p.add_run('  • Profit: ~$240/month 💰')
+    doc.add_paragraph()
+    doc.add_paragraph('Break-even: Just 2 customers!')
+    doc.add_paragraph()
+    
+    # Section 5: To Start
+    doc.add_heading('5. Steps to Get Started', level=1)
+    p = doc.add_paragraph()
+    p.add_run('1. Add $20 to OpenAI API (platform.openai.com/account/billing)\n')
+    p.add_run('2. Deploy on Replit ($3-5/month, auto-charged)\n')
+    p.add_run('3. That\'s it! Google and Stripe are free to start')
+    doc.add_paragraph()
+    
+    # Section 6: Google Verification
+    doc.add_heading('6. Google App Verification Process', level=1)
+    
+    doc.add_heading('Step 1: Access Google Cloud Console', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Go to https://console.cloud.google.com\n')
+    p.add_run('2. Select your SmartOffice AI project')
+    doc.add_paragraph()
+    
+    doc.add_heading('Step 2: Navigate to OAuth Consent Screen', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Click "APIs & Services" in left sidebar\n')
+    p.add_run('2. Click "OAuth consent screen"')
+    doc.add_paragraph()
+    
+    doc.add_heading('Step 3: Submit for Verification', level=2)
+    doc.add_paragraph('Click the "Submit for Verification" button')
+    doc.add_paragraph()
+    
+    doc.add_heading('Step 4: Required Information', level=2)
+    doc.add_paragraph('App Information:')
+    p = doc.add_paragraph()
+    p.add_run('  • App Name: SmartOffice AI\n')
+    p.add_run('  • App Description: "SmartOffice AI is an intelligent administrative assistant that helps SMEs organize emails, manage calendars, and generate automated reports using AI technology."')
+    doc.add_paragraph()
+    
+    doc.add_paragraph('Legal Documents (use your Replit deployment URL):')
+    p = doc.add_paragraph()
+    p.add_run('  • Privacy Policy URL: https://your-replit-url.repl.co/privacy\n')
+    p.add_run('  • Terms of Service URL: https://your-replit-url.repl.co/terms\n')
+    p.add_run('  • Homepage URL: https://your-replit-url.repl.co')
+    doc.add_paragraph()
+    
+    doc.add_paragraph('Scope Justification:')
+    doc.add_paragraph('Gmail Scope (gmail.readonly): "We need read-only access to user emails to provide AI-powered priority categorization, smart reply suggestions, and email summary reports. No emails are stored permanently; they are only processed in real-time for analysis."')
+    doc.add_paragraph()
+    doc.add_paragraph('Calendar Scope (calendar.readonly): "We need read-only access to view calendar events to display upcoming meetings and include them in automated weekly reports. No calendar data is modified or stored."')
+    doc.add_paragraph()
+    
+    doc.add_heading('Step 5: Review Timeline', level=2)
+    p = doc.add_paragraph()
+    p.add_run('  • Submit all information\n')
+    p.add_run('  • Google reviews in 3-7 business days\n')
+    p.add_run('  • Receive email updates at your Google account\n')
+    p.add_run('  • After approval: No "unverified app" warning!')
+    
+    # Generate file
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    
+    filename = "SmartOffice_Cost_Breakdown.docx"
+    return send_file(buffer, as_attachment=True, download_name=filename, 
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
