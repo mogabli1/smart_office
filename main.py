@@ -724,6 +724,25 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    """Contact form page"""
+    success = False
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+        
+        # Here you would normally send an email or save to database
+        # For now, we'll just show a success message
+        print(f"Contact form submission from {name} ({email}): {subject}")
+        print(f"Message: {message}")
+        
+        success = True
+    
+    return render_template("contact.html", success=success)
+
 @app.route("/pricing")
 def pricing():
     """Show pricing plans"""
