@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartOffice AI – Your Intelligent Admin Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
+</head>
+<body>
+  <header class="fade-in">
+    <div class="logo">SO</div>
+    <h1>SmartOffice AI</h1>
+    <p>Your Intelligent Admin Assistant</p>
+    <div class="lang-switch">
+      <a href="{{ url_for('landing_ar') }}">العربية 🇸🇦</a>
+    </div>
+  </header>
+
+  <section class="intro fade-in">
+    <p>
+      SmartOffice AI helps you organize emails, manage meetings, and create professional reports automatically using advanced AI tools.
+    </p>
+    <div class="buttons">
+      <a href="{{ url_for('login') }}" class="btn">Try the Demo</a>
+      <a href="{{ url_for('register') }}" class="btn secondary">Join Early Access</a>
+    </div>
+  </section>
+
+  <section class="features fade-in">
+    <div class="feature">
+      <h3>📧 Smart Email</h3>
+      <p>Automatically summarize and organize your inbox.</p>
+    </div>
+    <div class="feature">
+      <h3>📅 Smart Calendar</h3>
+      <p>Plan and track your meetings effortlessly.</p>
+    </div>
+    <div class="feature">
+      <h3>📊 Smart Reports</h3>
+      <p>Generate professional reports in seconds.</p>
+    </div>
+  </section>
+
+  <footer class="fade-in">
+    <p>© 2025 SmartOffice AI — All rights reserved.</p>
+    <p>
+      <a href="{{ url_for('privacy') }}">Privacy Policy</a> |
+      <a href="{{ url_for('terms') }}">Terms of Use</a> |
+      <a href="mailto:info@smartoffice-ai.com">Contact</a>
+    </p>
+  </footer>
+</body>
+</html>

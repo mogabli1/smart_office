@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سمارت أوفيس AI – مساعدك الإداري الذكي</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing-ar.css') }}" />
+</head>
+<body>
+  <header class="fade-in">
+    <div class="logo">SO</div>
+    <h1>سمارت أوفيس AI</h1>
+    <p>مساعدك الإداري الذكي</p>
+    <div class="lang-switch">
+      <a href="{{ url_for('landing') }}">English 🇬🇧</a>
+    </div>
+  </header>
+
+  <section class="intro fade-in">
+    <p>
+      سمارت أوفيس AI يساعدك على تنظيم بريدك الإلكتروني وجدولة الاجتماعات وإنشاء التقارير الاحترافية تلقائيًا باستخدام تقنيات الذكاء الاصطناعي.
+    </p>
+    <div class="buttons">
+      <a href="{{ url_for('login') }}" class="btn">جرب النسخة التجريبية</a>
+      <a href="{{ url_for('register') }}" class="btn secondary">انضم مبكرًا</a>
+    </div>
+  </section>
+
+  <section class="features fade-in">
+    <div class="feature">
+      <h3>📧 البريد الذكي</h3>
+      <p>تنظيم وتلخيص البريد الإلكتروني تلقائيًا.</p>
+    </div>
+    <div class="feature">
+      <h3>📅 التقويم الذكي</h3>
+      <p>إدارة وجدولة الاجتماعات بسهولة.</p>
+    </div>
+    <div class="feature">
+      <h3>📊 التقارير الذكية</h3>
+      <p>إنشاء تقارير احترافية في ثوانٍ.</p>
+    </div>
+  </section>
+
+  <footer class="fade-in">
+    <p>© 2025 سمارت أوفيس AI — جميع الحقوق محفوظة.</p>
+    <p>
+      <a href="{{ url_for('privacy') }}">سياسة الخصوصية</a> | 
+      <a href="{{ url_for('terms') }}">شروط الاستخدام</a> | 
+      <a href="mailto:info@smartoffice-ai.com">اتصل بنا</a>
+    </p>
+  </footer>
+</body>
+</html>

@@ -5,7 +5,14 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 
 **Current Status**: Development environment configured and running successfully on Replit.
 
-## Recent Changes (October 7, 2025)
+## Recent Changes (October 8, 2025)
+- **Implemented Bilingual Public Landing Pages** - Beautiful English and Arabic landing pages
+- Added auto-refresh functionality with dual-method approach (window.opener + localStorage fallback)
+- Created Privacy Policy and Terms of Service pages with footer links
+- Updated Terms to flexible pricing (allows changes with 30-day notice)
+- Generated comprehensive Word documents: cost breakdown, app status guide, Stripe guide
+
+## Previous Changes (October 7, 2025)
 - Migrated from GitHub import to Replit environment
 - Fixed deprecated `@app.before_first_request` decorator (Flask 3.0 compatibility)
 - Configured application to run on port 5000 for Replit hosting
@@ -49,20 +56,39 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 ├── smartoffice.db         # SQLite database (auto-created)
 ├── static/
 │   ├── css/
-│   │   └── style.css      # Custom styles with logo design
+│   │   ├── style.css         # Dashboard styles with logo design
+│   │   ├── landing.css       # English landing page styles
+│   │   └── landing-ar.css    # Arabic landing page styles
 │   └── images/
 │       └── smartoffice-logo.svg  # Downloadable logo file
 ├── templates/
+│   ├── landing.html       # Public landing page (English)
+│   ├── landing_ar.html    # Public landing page (Arabic)
 │   ├── base.html          # Base template with navbar and logo
-│   ├── index.html         # Dashboard
+│   ├── index.html         # Dashboard (protected)
 │   ├── login.html         # Login page
 │   ├── register.html      # Registration page
 │   ├── email.html         # Gmail inbox display
-│   └── feature.html       # Feature placeholder pages
+│   ├── calendar.html      # Google Calendar display
+│   ├── reports.html       # Report generation page
+│   ├── pricing.html       # Stripe subscription pricing
+│   ├── success.html       # Payment success page
+│   ├── privacy.html       # Privacy Policy
+│   └── terms.html         # Terms of Service
 └── .gitignore            # Python gitignore
 ```
 
 ### Key Features
+0. **Public Landing Pages** (NEW!)
+   - Beautiful bilingual landing pages (English/Arabic)
+   - Smooth fade-in animations
+   - Clean gradient backgrounds
+   - Feature showcase cards with hover effects
+   - Language switcher with flag icons
+   - Direct CTAs to Demo and Early Access signup
+   - Fully responsive design
+   - No login required to view
+
 1. **User Authentication**
    - Registration with email, name, and password
    - Secure login with password hashing

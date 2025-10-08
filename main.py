@@ -663,8 +663,19 @@ def set_language(lang):
     return redirect(request.referrer or url_for('index'))
 
 @app.route("/")
+def landing():
+    """Public landing page - English version"""
+    return render_template("landing.html")
+
+@app.route("/landing-ar")
+def landing_ar():
+    """Public landing page - Arabic version"""
+    return render_template("landing_ar.html")
+
+@app.route("/dashboard")
 @login_required
 def index():
+    """User dashboard (requires login)"""
     user = current_user()
     has_subscription = has_active_subscription(user)
     return render_template("index.html", user=user, has_subscription=has_subscription)
