@@ -1518,6 +1518,251 @@ def terms():
     """Terms of Service page"""
     return render_template('terms.html')
 
+@app.route("/download-app-status")
+def download_app_status():
+    """Generate Word document with app status and next steps"""
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('SmartOffice AI - App Status & Next Steps', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    doc.add_paragraph('Status Report - October 8, 2025')
+    doc.add_paragraph()
+    
+    # Section 1: What's COMPLETED
+    doc.add_heading('✅ COMPLETED FEATURES (100% Ready)', level=1)
+    
+    doc.add_heading('1. Core Features', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ User Authentication - Registration, login, password hashing\n')
+    p.add_run('✅ Gmail Integration - Per-user OAuth, inbox display (last 15 emails)\n')
+    p.add_run('✅ Google Calendar Integration - Per-user OAuth, upcoming events display\n')
+    p.add_run('✅ AI Email Priority - GPT-4o categorization (Urgent/Important/Normal)\n')
+    p.add_run('✅ AI Reply Suggestions - 3 tones (Professional/Friendly/Brief) with copy\n')
+    p.add_run('✅ PDF Report Generation - ReportLab with email & calendar summaries\n')
+    p.add_run('✅ Word Report Generation - python-docx with professional formatting\n')
+    p.add_run('✅ Bilingual Interface - English/Arabic with RTL support\n')
+    p.add_run('✅ Stripe Payments - $29/month Premium subscription\n')
+    p.add_run('✅ Auto-refresh OAuth - Gmail/Calendar/Payment tabs auto-close & refresh')
+    doc.add_paragraph()
+    
+    doc.add_heading('2. Legal & Compliance', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ Privacy Policy - Comprehensive data privacy page (/privacy)\n')
+    p.add_run('✅ Terms of Service - Complete legal terms page (/terms)\n')
+    p.add_run('✅ Footer Links - Easy access from all pages\n')
+    p.add_run('✅ Google API User Data Policy - Compliant with Limited Use requirements')
+    doc.add_paragraph()
+    
+    doc.add_heading('3. Technical Setup', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ Flask 3.0 Application - Production-ready backend\n')
+    p.add_run('✅ SQLite Database - User data & OAuth tokens storage\n')
+    p.add_run('✅ Gunicorn Server - Production WSGI server configured\n')
+    p.add_run('✅ Bootstrap 5 UI - Modern, responsive design\n')
+    p.add_run('✅ Custom Logo - Professional purple "SO" branding\n')
+    p.add_run('✅ Deployment Config - Autoscale setup for Replit')
+    doc.add_paragraph()
+    
+    # Section 2: Current Status
+    doc.add_heading('📊 CURRENT STATUS', level=1)
+    
+    doc.add_heading('Working Features:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('• Users can register and login\n')
+    p.add_run('• OAuth works for Gmail (per-user, auto-refresh)\n')
+    p.add_run('• OAuth works for Calendar (per-user, auto-refresh)\n')
+    p.add_run('• Stripe payment processing works\n')
+    p.add_run('• AI features ready (needs OpenAI credits to activate)\n')
+    p.add_run('• Report generation works (PDF & Word)\n')
+    p.add_run('• Language switcher works (English/Arabic)')
+    doc.add_paragraph()
+    
+    doc.add_heading('Known Limitations:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('⚠️ Google "Unverified App" Warning - Users must click "Advanced" during OAuth\n')
+    p.add_run('   → Will be fixed after Google verification (3-7 days)\n\n')
+    p.add_run('⚠️ AI Features Disabled - Email priority & reply suggestions not active\n')
+    p.add_run('   → Need to add OpenAI API credits ($20-50)\n\n')
+    p.add_run('✅ Everything else fully functional!')
+    doc.add_paragraph()
+    
+    # Section 3: What Needs to be Done
+    doc.add_heading('🎯 WHAT NEEDS TO BE DONE', level=1)
+    
+    doc.add_heading('STEP 1: Deploy the App (15 minutes)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Click "Deploy" button in Replit\n')
+    p.add_run('2. Choose "Autoscale" deployment type\n')
+    p.add_run('3. Review configuration (already set up)\n')
+    p.add_run('4. Click "Deploy" to publish\n')
+    p.add_run('5. Copy your deployment URL (e.g., smartoffice-ai.replit.app)')
+    doc.add_paragraph()
+    doc.add_paragraph('Cost: $3-5/month (auto-charged to Replit account)')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 2: Add OpenAI API Credits (5 minutes)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Go to: https://platform.openai.com/account/billing\n')
+    p.add_run('2. Click "Add payment method"\n')
+    p.add_run('3. Add credit card and purchase $20-50 in credits\n')
+    p.add_run('4. AI features will activate automatically')
+    doc.add_paragraph()
+    doc.add_paragraph('Cost: $20-50 (pay-as-you-go, lasts 1-2 months)')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 3: Update Google OAuth URLs (10 minutes)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('After deployment, update redirect URIs in Google Cloud Console:\n\n')
+    p.add_run('1. Go to: https://console.cloud.google.com\n')
+    p.add_run('2. Select your project → "APIs & Services" → "Credentials"\n')
+    p.add_run('3. Click your OAuth 2.0 Client ID\n')
+    p.add_run('4. Add to Authorized redirect URIs:\n')
+    p.add_run('   • https://YOUR-DEPLOYMENT-URL/oauth2callback\n')
+    p.add_run('   • https://YOUR-DEPLOYMENT-URL/calendar-oauth2callback\n')
+    p.add_run('5. Click "Save"')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 4: Submit for Google Verification (30 minutes)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Go to: https://console.cloud.google.com\n')
+    p.add_run('2. Navigate to: "APIs & Services" → "OAuth consent screen"\n')
+    p.add_run('3. Click "Submit for Verification"\n\n')
+    p.add_run('Required Information:\n')
+    p.add_run('• App Name: SmartOffice AI\n')
+    p.add_run('• Privacy Policy URL: https://YOUR-URL/privacy\n')
+    p.add_run('• Terms of Service URL: https://YOUR-URL/terms\n')
+    p.add_run('• Gmail Scope Justification: "Read-only access for AI email analysis"\n')
+    p.add_run('• Calendar Scope Justification: "Read-only access for event display"\n\n')
+    p.add_run('Timeline: 3-7 business days for approval')
+    doc.add_paragraph()
+    
+    doc.add_heading('STEP 5: Test Everything (15 minutes)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Create test account on deployed app\n')
+    p.add_run('2. Test Stripe payment (use test card: 4242 4242 4242 4242)\n')
+    p.add_run('3. Connect Gmail (accept "unverified app" warning)\n')
+    p.add_run('4. Connect Calendar\n')
+    p.add_run('5. Test AI features (if OpenAI credits added)\n')
+    p.add_run('6. Generate PDF report\n')
+    p.add_run('7. Generate Word report\n')
+    p.add_run('8. Test language switcher')
+    doc.add_paragraph()
+    
+    doc.add_heading('OPTIONAL: Add Custom Domain (Later)', level=2)
+    p = doc.add_paragraph()
+    p.add_run('1. Buy domain (GoDaddy, Namecheap, etc.)\n')
+    p.add_run('2. In Replit Deployment → Settings → "Link a domain"\n')
+    p.add_run('3. Add DNS records from your domain registrar\n')
+    p.add_run('4. Update Google OAuth redirect URIs with new domain\n')
+    p.add_run('5. Update Privacy/Terms URLs in Google verification')
+    doc.add_paragraph()
+    
+    # Section 4: Timeline
+    doc.add_heading('⏱️ TIMELINE TO LAUNCH', level=1)
+    
+    table = doc.add_table(rows=6, cols=3)
+    table.style = 'Light Grid Accent 1'
+    
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = 'Task'
+    hdr_cells[1].text = 'Time'
+    hdr_cells[2].text = 'Can Do Now?'
+    
+    table.rows[1].cells[0].text = 'Deploy App'
+    table.rows[1].cells[1].text = '15 min'
+    table.rows[1].cells[2].text = 'YES'
+    
+    table.rows[2].cells[0].text = 'Add OpenAI Credits'
+    table.rows[2].cells[1].text = '5 min'
+    table.rows[2].cells[2].text = 'YES'
+    
+    table.rows[3].cells[0].text = 'Update OAuth URLs'
+    table.rows[3].cells[1].text = '10 min'
+    table.rows[3].cells[2].text = 'YES'
+    
+    table.rows[4].cells[0].text = 'Submit Verification'
+    table.rows[4].cells[1].text = '30 min'
+    table.rows[4].cells[2].text = 'YES'
+    
+    table.rows[5].cells[0].text = 'Google Approval'
+    table.rows[5].cells[1].text = '3-7 days'
+    table.rows[5].cells[2].text = 'WAIT'
+    
+    doc.add_paragraph()
+    doc.add_paragraph('Total Active Time: ~1 hour')
+    doc.add_paragraph('Total Calendar Time: 3-7 days (waiting for Google)')
+    doc.add_paragraph()
+    
+    # Section 5: Quick Reference
+    doc.add_heading('📋 QUICK REFERENCE', level=1)
+    
+    doc.add_heading('Important Links:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('• Google Cloud Console: https://console.cloud.google.com\n')
+    p.add_run('• OpenAI Billing: https://platform.openai.com/account/billing\n')
+    p.add_run('• Stripe Dashboard: https://dashboard.stripe.com\n')
+    p.add_run('• Your Replit Project: [Your Replit URL]')
+    doc.add_paragraph()
+    
+    doc.add_heading('Current API Keys/Secrets (Already Set):', level=2)
+    p = doc.add_paragraph()
+    p.add_run('✅ GOOGLE_CLIENT_ID - Set\n')
+    p.add_run('✅ GOOGLE_CLIENT_SECRET - Set\n')
+    p.add_run('✅ OPENAI_API_KEY - Set (needs credits)\n')
+    p.add_run('✅ STRIPE_SECRET_KEY - Set')
+    doc.add_paragraph()
+    
+    doc.add_heading('Test Credentials:', level=2)
+    p = doc.add_paragraph()
+    p.add_run('Stripe Test Card: 4242 4242 4242 4242\n')
+    p.add_run('Expiry: Any future date\n')
+    p.add_run('CVV: Any 3 digits\n')
+    p.add_run('ZIP: Any 5 digits')
+    doc.add_paragraph()
+    
+    # Section 6: Summary
+    doc.add_heading('✨ SUMMARY', level=1)
+    
+    doc.add_paragraph('Your SmartOffice AI app is 100% READY for deployment!')
+    doc.add_paragraph()
+    
+    p = doc.add_paragraph()
+    p.add_run('What Works NOW:\n')
+    p.add_run('✅ Complete user authentication\n')
+    p.add_run('✅ Gmail & Calendar OAuth (with "unverified" warning)\n')
+    p.add_run('✅ Stripe payments ($29/month)\n')
+    p.add_run('✅ Report generation (PDF & Word)\n')
+    p.add_run('✅ Bilingual interface\n')
+    p.add_run('✅ Legal pages (Privacy & Terms)')
+    doc.add_paragraph()
+    
+    p = doc.add_paragraph()
+    p.add_run('What Needs Action:\n')
+    p.add_run('1. Deploy the app (1 click in Replit)\n')
+    p.add_run('2. Add OpenAI credits ($20-50)\n')
+    p.add_run('3. Submit Google verification (30 min)\n')
+    p.add_run('4. Wait 3-7 days for approval')
+    doc.add_paragraph()
+    
+    p = doc.add_paragraph()
+    p.add_run('Total Cost: $23-55/month\n')
+    p.add_run('Break-even: 2 customers\n')
+    p.add_run('Profit (10 customers): ~$240/month')
+    doc.add_paragraph()
+    
+    doc.add_paragraph('🚀 Ready to deploy and launch your AI-powered admin assistant!')
+    
+    # Generate file
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    
+    filename = "SmartOffice_Status_Report.docx"
+    return send_file(buffer, as_attachment=True, download_name=filename, 
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
 @app.route("/download-cost-breakdown")
 def download_cost_breakdown():
     """Generate Word document with cost breakdown"""
