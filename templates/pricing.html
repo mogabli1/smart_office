@@ -91,9 +91,19 @@ document.getElementById('checkout-form').addEventListener('submit', function(e) 
   const button = document.getElementById('checkout-button');
   const loading = document.getElementById('loading-indicator');
   
-  button.disabled = true;
-  button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+  button.innerHTML = '<i class="bi bi-check-circle me-2"></i>Payment Page Opened';
+  button.classList.remove('btn-primary');
+  button.classList.add('btn-success');
   loading.style.display = 'block';
+  
+  // Re-enable after 3 seconds in case user needs to try again
+  setTimeout(function() {
+    button.disabled = false;
+    button.innerHTML = '<i class="bi bi-credit-card me-2"></i>Subscribe Now';
+    button.classList.remove('btn-success');
+    button.classList.add('btn-primary');
+    loading.style.display = 'none';
+  }, 5000);
 });
 </script>
 {% endblock %}
