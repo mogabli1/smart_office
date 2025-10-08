@@ -660,7 +660,7 @@ def set_language(lang):
     """Switch between English and Arabic"""
     if lang in ['en', 'ar']:
         session['language'] = lang
-    return redirect(request.referrer or url_for('index'))
+    return redirect(request.referrer or url_for('landing'))
 
 @app.route("/")
 def landing():
