@@ -48,6 +48,89 @@ if OPENAI_API_KEY:
 else:
     print("INFO: OPENAI_API_KEY not set - AI features will be disabled")
 
+# Email sending function using Replit mail service
+def send_contact_form_email(name, sender_email, subject, message):
+    """Send contact form submission to business email"""
+    try:
+        # Get authentication token
+        x_replit_token = None
+        if os.environ.get('REPL_IDENTITY'):
+            x_replit_token = f"repl {os.environ.get('REPL_IDENTITY')}"
+        elif os.environ.get('WEB_REPL_RENEWAL'):
+            x_replit_token = f"depl {os.environ.get('WEB_REPL_RENEWAL')}"
+        
+        if not x_replit_token:
+            print("WARNING: No Replit auth token found for email sending")
+            return False
+        
+        # Prepare email content
+        email_html = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px 10px 0 0;">
+                    <h2 style="color: white; margin: 0;">New Contact Form Submission</h2>
+                </div>
+                <div style="background: #f8f9fa; padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 10px 10px;">
+                    <p><strong>From:</strong> {name}</p>
+                    <p><strong>Email:</strong> {sender_email}</p>
+                    <p><strong>Subject:</strong> {subject}</p>
+                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+                    <p><strong>Message:</strong></p>
+                    <div style="background: white; padding: 15px; border-radius: 5px; white-space: pre-wrap;">
+{message}
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 5px; text-align: center;">
+                    <p style="margin: 0; font-size: 12px; color: #666;">
+                        Reply to this customer at: <a href="mailto:{sender_email}" style="color: #667eea;">{sender_email}</a>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        email_text = f"""
+New Contact Form Submission
+
+From: {name}
+Email: {sender_email}
+Subject: {subject}
+
+Message:
+{message}
+
+---
+Reply to: {sender_email}
+        """
+        
+        # Send email using Replit mail service
+        response = requests.post(
+            "https://connectors.replit.com/api/v2/mailer/send",
+            headers={
+                "Content-Type": "application/json",
+                "X_REPLIT_TOKEN": x_replit_token
+            },
+            json={
+                "to": "mogabli12@gmail.com",
+                "subject": f"[SmartOffice AI Contact] {subject}",
+                "html": email_html,
+                "text": email_text
+            }
+        )
+        
+        if response.status_code == 200:
+            print(f"Contact form email sent successfully to mogabli12@gmail.com")
+            return True
+        else:
+            print(f"Failed to send email: {response.status_code} - {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"Error sending contact form email: {e}")
+        return False
+
 # Translations
 TRANSLATIONS = {
     'en': {
@@ -734,11 +817,14 @@ def contact():
         subject = request.form.get("subject", "").strip()
         message = request.form.get("message", "").strip()
         
-        # Here you would normally send an email or save to database
-        # For now, we'll just show a success message
-        print(f"Contact form submission from {name} ({email}): {subject}")
-        print(f"Message: {message}")
+        # Send email notification to mogabli12@gmail.com
+        try:
+            send_contact_form_email(name, email, subject, message)
+            print(f"Contact form submission from {name} ({email}): {subject}")
+        except Exception as e:
+            print(f"Error processing contact form: {e}")
         
+        # Always show success to user
         success = True
     
     return render_template("contact.html", success=success)
