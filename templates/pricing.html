@@ -48,10 +48,16 @@
             <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Bilingual support (EN/AR)</strong></li>
             <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>24/7 email support</li>
           </ul>
-          <form action="{{ url_for('create_checkout_session') }}" method="POST">
-            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+          <form action="{{ url_for('create_checkout_session') }}" method="POST" id="checkout-form">
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" id="checkout-button">
               <i class="bi bi-credit-card me-2"></i>Subscribe Now
             </button>
+            <div id="loading-indicator" class="text-center mt-3" style="display: none;">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="text-muted mt-2 small">Redirecting to secure payment...</p>
+            </div>
           </form>
         </div>
       </div>
@@ -78,4 +84,15 @@
   box-shadow: 0 1rem 3rem rgba(13, 110, 253, .2)!important;
 }
 </style>
+
+<script>
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+  const button = document.getElementById('checkout-button');
+  const loading = document.getElementById('loading-indicator');
+  
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+  loading.style.display = 'block';
+});
+</script>
 {% endblock %}
