@@ -2312,5 +2312,159 @@ def download_cost_breakdown():
     return send_file(buffer, as_attachment=True, download_name=filename, 
                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
+# ============================================================================
+# TEST GMAIL INTEGRATION (Alternative OAuth Flow)
+# ============================================================================
+# NOTE: This requires a client_secret JSON file to work
+# Place the file in root: client_secret_596418050127-eoph9acg49nm38ouh5mblln5tb2sf6rk.apps.googleusercontent.com.json
+
+TEST_CLIENT_SECRETS_FILE = "client_secret_596418050127-eoph9acg49nm38ouh5mblln5tb2sf6rk.apps.googleusercontent.com.json"
+
+@app.route('/test-gmail')
+def test_gmail_index():
+    """Test Gmail integration landing page"""
+    return '''
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+            h2 { color: #667eea; }
+            .btn { 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white; 
+                padding: 12px 24px; 
+                text-decoration: none; 
+                border-radius: 5px;
+                display: inline-block;
+                margin: 10px 0;
+            }
+            .btn:hover { opacity: 0.9; }
+            .info { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <h2>SmartOffice AI – Test Gmail Integration ✅</h2>
+        <p>This is a test page for alternative Gmail OAuth integration.</p>
+        <a href="/test-authorize" class="btn">Authorize Gmail Access</a>
+        <div class="info">
+            <strong>⚠️ Note:</strong> This requires the client_secret JSON file to be uploaded to the project root.
+        </div>
+        <a href="/">← Back to Home</a>
+    </body>
+    </html>
+    '''
+
+@app.route('/test-authorize')
+def test_authorize():
+    """Start OAuth authorization flow for test integration"""
+    if not os.path.exists(TEST_CLIENT_SECRETS_FILE):
+        return '''
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;">
+            <h2 style="color: #d32f2f;">❌ Client Secret File Not Found</h2>
+            <p>Please upload the client_secret JSON file to the project root:</p>
+            <code style="background: #f0f0f0; padding: 10px; display: block; margin: 10px 0;">
+            client_secret_596418050127-eoph9acg49nm38ouh5mblln5tb2sf6rk.apps.googleusercontent.com.json
+            </code>
+            <a href="/test-gmail">← Go Back</a>
+        </body>
+        </html>
+        '''
+    
+    flow = Flow.from_client_secrets_file(
+        TEST_CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        redirect_uri=url_for('test_oauth2callback', _external=True, _scheme='https')
+    )
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+    session['test_oauth_state'] = state
+    return redirect(authorization_url)
+
+@app.route('/test-oauth2callback')
+def test_oauth2callback():
+    """OAuth callback for test integration"""
+    state = session.get('test_oauth_state')
+    flow = Flow.from_client_secrets_file(
+        TEST_CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        state=state,
+        redirect_uri=url_for('test_oauth2callback', _external=True, _scheme='https')
+    )
+    flow.fetch_token(authorization_response=request.url)
+
+    credentials = flow.credentials
+    with open("test_token.json", "w") as token:
+        token.write(credentials.to_json())
+
+    return redirect(url_for('test_list_emails'))
+
+@app.route('/test-emails')
+def test_list_emails():
+    """Display emails using test integration"""
+    creds = None
+    if os.path.exists("test_token.json"):
+        creds = Credentials.from_authorized_user_file("test_token.json", SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            import google.auth.transport.requests
+            creds.refresh(google.auth.transport.requests.Request())
+        else:
+            return redirect(url_for('test_authorize'))
+
+    service = build('gmail', 'v1', credentials=creds)
+    results = service.users().messages().list(userId='me', maxResults=10).execute()
+    messages = results.get('messages', [])
+
+    output = '''
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 30px auto; padding: 20px; }
+            h2 { color: #667eea; }
+            ul { list-style: none; padding: 0; }
+            li { 
+                background: #f8f9fa; 
+                margin: 10px 0; 
+                padding: 15px; 
+                border-left: 4px solid #667eea;
+                border-radius: 4px;
+            }
+            li b { color: #333; }
+            li i { color: #666; font-size: 0.9em; }
+            .back { margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <h2>📧 آخر 10 رسائل في بريدك:</h2>
+        <ul>
+    '''
+    
+    for msg in messages:
+        msg_data = service.users().messages().get(userId='me', id=msg['id']).execute()
+        subject = "بدون عنوان"
+        sender = "غير معروف"
+        for header in msg_data['payload']['headers']:
+            if header['name'] == 'Subject':
+                subject = header['value']
+            if header['name'] == 'From':
+                sender = header['value']
+        output += f"<li><b>{subject}</b><br><i>{sender}</i></li>"
+    
+    output += '''
+        </ul>
+        <div class="back">
+            <a href="/test-gmail">← Back to Test Page</a> | 
+            <a href="/">Home</a>
+        </div>
+    </body>
+    </html>
+    '''
+    return output
+
+# ============================================================================
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
