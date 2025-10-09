@@ -1,0 +1,86 @@
+from __future__ import print_function
+import os.path
+from flask import Flask, redirect, url_for, session, request, jsonify
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+import google.auth.transport.requests
+
+# إعداد التطبيق Flask
+app = Flask(__name__)
+app.secret_key = "smartoffice-secret-key"
+
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+
+# المسار لملف client_secret.json
+CLIENT_SECRETS_FILE = "client_secret_596418050127-eoph9acg49nm38ouh5mblln5tb2sf6rk.apps.googleusercontent.com.json"
+
+@app.route('/')
+def index():
+    return '<h2>SmartOffice AI – Gmail Integration Ready ✅</h2><a href="/authorize">Authorize Gmail Access</a>'
+
+# بدء عملية التفويض OAuth
+@app.route('/authorize')
+def authorize():
+    flow = Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        redirect_uri=url_for('oauth2callback', _external=True)
+    )
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+    session['state'] = state
+    return redirect(authorization_url)
+
+# استقبال الكود بعد التفويض
+@app.route('/oauth2callback')
+def oauth2callback():
+    state = session['state']
+    flow = Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE,
+        scopes=SCOPES,
+        state=state,
+        redirect_uri=url_for('oauth2callback', _external=True)
+    )
+    flow.fetch_token(authorization_response=request.url)
+
+    credentials = flow.credentials
+    with open("token.json", "w") as token:
+        token.write(credentials.to_json())
+
+    return redirect(url_for('list_emails'))
+
+# قراءة الإيميلات
+@app.route('/emails')
+def list_emails():
+    creds = None
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(google.auth.transport.requests.Request())
+        else:
+            return redirect(url_for('authorize'))
+
+    service = build('gmail', 'v1', credentials=creds)
+    results = service.users().messages().list(userId='me', maxResults=10).execute()
+    messages = results.get('messages', [])
+
+    output = "<h2>📧 آخر 10 رسائل في بريدك:</h2><ul>"
+    for msg in messages:
+        msg_data = service.users().messages().get(userId='me', id=msg['id']).execute()
+        subject = "بدون عنوان"
+        sender = "غير معروف"
+        for header in msg_data['payload']['headers']:
+            if header['name'] == 'Subject':
+                subject = header['value']
+            if header['name'] == 'From':
+                sender = header['value']
+        output += f"<li><b>{subject}</b> - <i>{sender}</i></li>"
+    output += "</ul>"
+    return output
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
