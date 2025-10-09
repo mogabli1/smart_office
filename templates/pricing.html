@@ -1,25 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
-  <!-- Testing Phase Notice -->
-  <div class="alert alert-info alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-left: 5px solid #667eea;">
-    <h5 class="alert-heading">
-      <i class="bi bi-info-circle-fill {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
-      {% if lang == 'ar' %}
-        مرحلة التجربة
-      {% else %}
-        Testing Phase
-      {% endif %}
-    </h5>
-    <p class="mb-0">
-      {% if lang == 'ar' %}
-        نحن حاليًا في مرحلة التجربة بانتظار موافقة Google (3-7 أيام). يمكنك استكشاف جميع الميزات مجانًا! سنخطرك عبر البريد الإلكتروني فور توفر الاشتراكات المدفوعة.
-      {% else %}
-        We're currently in testing phase awaiting Google verification approval (3-7 days). You can explore all features for free! We'll notify you via email once paid subscriptions are available.
-      {% endif %}
-    </p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
 
   <div class="text-center mb-5">
     <h1 class="display-4 fw-bold mb-3">{{ t('choose_plan') }}</h1>
@@ -68,19 +49,11 @@
             <li class="mb-3"><i class="bi bi-check-circle-fill text-success {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i><strong>{{ t('bilingual_support') }}</strong></li>
             <li class="mb-3"><i class="bi bi-check-circle-fill text-success {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('email_support') }}</li>
           </ul>
-          <button type="button" class="btn btn-primary btn-lg w-100 fw-bold" id="subscribe-button" onclick="showTestingModal()">
-            <i class="bi bi-credit-card {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('subscribe_now') }}
-          </button>
-          <p class="text-center mt-3 mb-0">
-            <small class="text-muted">
-              <i class="bi bi-gift {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
-              {% if lang == 'ar' %}
-                جميع الميزات مجانية حاليًا خلال فترة التجربة
-              {% else %}
-                All features free during testing phase
-              {% endif %}
-            </small>
-          </p>
+          <form action="{{ url_for('create_checkout_session') }}" method="POST">
+            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" id="subscribe-button">
+              <i class="bi bi-credit-card {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('subscribe_now') }}
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -107,85 +80,4 @@
 }
 </style>
 
-<!-- Testing Phase Modal -->
-<div class="modal fade" id="testingModal" tabindex="-1" aria-labelledby="testingModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="testingModalLabel">
-          <i class="bi bi-clock-history {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
-          {% if lang == 'ar' %}
-            مرحلة التجربة
-          {% else %}
-            Testing Phase
-          {% endif %}
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center py-4">
-        <div class="mb-3">
-          <i class="bi bi-hourglass-split text-primary" style="font-size: 3rem;"></i>
-        </div>
-        <h5 class="mb-3">
-          {% if lang == 'ar' %}
-            شكراً لاهتمامك!
-          {% else %}
-            Thank You for Your Interest!
-          {% endif %}
-        </h5>
-        <p class="text-muted">
-          {% if lang == 'ar' %}
-            نحن حاليًا في انتظار موافقة Google على التطبيق (تستغرق عادةً 3-7 أيام). خلال هذه الفترة، جميع الميزات المتقدمة متاحة مجانًا لجميع المستخدمين!
-          {% else %}
-            We're currently awaiting Google verification approval for our app (typically takes 3-7 days). During this period, all premium features are available free for all users!
-          {% endif %}
-        </p>
-        <div class="alert alert-success mt-3">
-          <strong>
-            {% if lang == 'ar' %}
-              🎉 استمتع بجميع الميزات مجانًا الآن!
-            {% else %}
-              🎉 Enjoy all features free right now!
-            {% endif %}
-          </strong>
-        </div>
-        <p class="small text-muted mb-0">
-          {% if lang == 'ar' %}
-            سنخطرك عبر البريد الإلكتروني فور توفر الاشتراكات المدفوعة.
-          {% else %}
-            We'll notify you via email once paid subscriptions are available.
-          {% endif %}
-        </p>
-      </div>
-      <div class="modal-footer">
-        {% if session.get('user_id') %}
-        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal" onclick="window.location.href='{{ url_for('index') }}'">
-          <i class="bi bi-arrow-right-circle {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
-          {% if lang == 'ar' %}
-            انتقل إلى لوحة التحكم
-          {% else %}
-            Go to Dashboard
-          {% endif %}
-        </button>
-        {% else %}
-        <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal" onclick="window.location.href='{{ url_for('register') }}'">
-          <i class="bi bi-arrow-right-circle {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>
-          {% if lang == 'ar' %}
-            إنشاء حساب مجاني
-          {% else %}
-            Create Free Account
-          {% endif %}
-        </button>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-function showTestingModal() {
-  const modal = new bootstrap.Modal(document.getElementById('testingModal'));
-  modal.show();
-}
-</script>
 {% endblock %}
