@@ -916,9 +916,8 @@ def create_checkout_session():
         return redirect(url_for("pricing"))
 
 @app.route("/success")
-@login_required
 def success():
-    """Handle successful payment"""
+    """Handle successful payment - no login required (uses Stripe session)"""
     session_id = request.args.get('session_id')
     
     if session_id and STRIPE_SECRET_KEY:
@@ -927,20 +926,28 @@ def success():
             checkout_session = stripe.checkout.Session.retrieve(session_id)
             
             if checkout_session.payment_status == 'paid':
-                user = current_user()
-                # Calculate subscription end date (30 days from now)
-                end_date = datetime.now() + timedelta(days=30)
+                # Get user_id from Stripe metadata
+                user_id = checkout_session.metadata.get('user_id')
                 
-                # Update user subscription status
-                conn = get_db()
-                conn.execute(
-                    "UPDATE users SET subscription_status = ?, subscription_end_date = ? WHERE id = ?",
-                    ('active', end_date.isoformat(), user['id'])
-                )
-                conn.commit()
-                conn.close()
-                
-                flash("Subscription activated successfully!", "success")
+                if user_id:
+                    # Calculate subscription end date (30 days from now)
+                    end_date = datetime.now() + timedelta(days=30)
+                    
+                    # Update user subscription status
+                    conn = get_db()
+                    conn.execute(
+                        "UPDATE users SET subscription_status = ?, subscription_end_date = ? WHERE id = ?",
+                        ('active', end_date.isoformat(), user_id)
+                    )
+                    conn.commit()
+                    conn.close()
+                    
+                    # Re-establish session if not logged in
+                    if not session.get('user_id'):
+                        session['user_id'] = int(user_id)
+                    
+                    flash("Subscription activated successfully!", "success")
+                    print(f"Subscription activated for user {user_id}")
         except Exception as e:
             print(f"Error processing successful payment: {e}")
     
