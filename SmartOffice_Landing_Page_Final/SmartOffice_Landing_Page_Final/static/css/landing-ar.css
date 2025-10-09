@@ -1,0 +1,295 @@
+
+/* ====== SMARTOFFICE-AI ARABIC LANDING PAGE (Final RTL Version) ====== */
+
+body {
+  margin: 0;
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  background: linear-gradient(180deg, #f7f9fb 0%, #e4ebf3 100%);
+  color: #222;
+  text-align: center;
+}
+
+/* === Navbar === */
+.top-nav {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  flex-direction: row-reverse;
+}
+
+.logo-small {
+  font-weight: 700;
+  color: #4a90e2;
+  background: #f0f4f8;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 18px;
+}
+
+.brand-name {
+  font-weight: 700;
+  margin-right: 8px;
+  color: #333;
+}
+
+.nav-actions a {
+  margin-right: 15px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #333;
+}
+
+.nav-actions .btn-small {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-block;
+  padding: 12px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #4a90e2;
+  color: #fff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background-color: #357ab8;
+  transform: translateY(-3px);
+}
+
+.btn-secondary {
+  background-color: #777;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #555;
+  transform: translateY(-3px);
+}
+
+/* === Header / Hero === */
+header {
+  padding: 80px 20px 50px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 64px;
+  font-weight: 800;
+  color: #4a90e2;
+  background: #f0f4f8;
+  display: inline-block;
+  padding: 15px 30px;
+  border-radius: 60px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.subtitle {
+  font-size: 1.3em;
+  color: #555;
+}
+
+.description {
+  max-width: 650px;
+  margin: 15px auto 25px;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* === Features Section === */
+.features {
+  background: #fff;
+  padding: 70px 20px;
+}
+
+.section-title {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.section-subtitle {
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature {
+  background: #fdfdfd;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 25px 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* === Pricing Section === */
+.pricing-preview {
+  background: linear-gradient(180deg, #f0f4f8 0%, #e7edf3 100%);
+  padding: 80px 20px;
+}
+
+.pricing-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 30px 20px 40px;
+  transition: transform 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: scale(1.03);
+}
+
+.price {
+  font-size: 2.4em;
+  color: #4a90e2;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.price span {
+  font-size: 0.4em;
+  color: #777;
+}
+
+.benefits {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  text-align: right;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* === CTA Section === */
+.cta-section {
+  background: #4a90e2;
+  color: white;
+  padding: 80px 20px;
+}
+
+.cta-section h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.cta-section p {
+  font-size: 1.1em;
+  margin-bottom: 25px;
+}
+
+/* === Footer === */
+footer {
+  background: #f9fafb;
+  padding: 30px 20px;
+  margin-top: 40px;
+  border-top: 1px solid #e4e8ec;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.footer-links a {
+  color: #4a90e2;
+  margin-right: 15px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.logo-small {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+copyright {
+  color: #777;
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+/* === Fade-in Animation === */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+  }
+  header {
+    padding: 60px 20px;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .pricing-card {
+    width: 90%;
+  }
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}
