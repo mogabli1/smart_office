@@ -2313,20 +2313,6 @@ def download_cost_breakdown():
                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
 
 # ============================================================================
-# TEST NEW LANDING PAGES (with Google Analytics & Search Console)
-# ============================================================================
-
-@app.route('/test-landing')
-def test_landing():
-    """Test new English landing page with Google Analytics"""
-    return render_template('test_landing.html')
-
-@app.route('/test-landing-ar')
-def test_landing_ar():
-    """Test new Arabic landing page with Google Analytics"""
-    return render_template('test_landing_ar.html')
-
-# ============================================================================
 # TEST GMAIL INTEGRATION (Alternative OAuth Flow)
 # ============================================================================
 # NOTE: This requires a client_secret JSON file to work
