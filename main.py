@@ -829,6 +829,11 @@ def contact():
     
     return render_template("contact.html", success=success)
 
+@app.route("/sitemap.xml")
+def sitemap():
+    """Serve sitemap.xml for Google Search Console"""
+    return send_file("sitemap.xml", mimetype="application/xml")
+
 @app.route("/pricing")
 def pricing():
     """Show pricing plans"""
