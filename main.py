@@ -837,6 +837,13 @@ def sitemap():
 @app.route("/pricing")
 def pricing():
     """Show pricing plans"""
+    # If user is logged in and has active subscription, redirect to dashboard
+    if session.get('user_id'):
+        user = current_user()
+        if user and has_active_subscription(user):
+            flash("You already have an active Premium subscription! 🎉", "success")
+            return redirect(url_for('index'))
+    
     return render_template("pricing.html")
 
 @app.route("/create-checkout-session", methods=["POST"])
