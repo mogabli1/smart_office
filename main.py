@@ -849,12 +849,8 @@ def create_checkout_session():
     
     user = current_user()
     try:
-        # Use published domain for reliable redirects
-        domain = 'www.smartoffice-ai.com'
-        
-        # Fallback to current host if published domain not available
-        if not domain or 'replit' in request.host:
-            domain = request.host
+        # Use current request host for redirects (works in dev and production)
+        domain = request.host
         
         # Create or retrieve Stripe customer
         customer_id = user.get('stripe_customer_id')
