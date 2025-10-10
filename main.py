@@ -1068,7 +1068,7 @@ def oauth2callback():
         flash(f"Failed to connect Gmail: {str(e)}", "danger")
         return redirect(url_for('email'))
 
-@app.route("/calendar-authorize")
+@app.route("/calendar_authorize")
 @login_required
 def calendar_authorize():
     """Start OAuth flow for Google Calendar"""
@@ -1108,7 +1108,7 @@ def calendar_authorize():
         flash(f"Calendar OAuth configuration error: {str(e)}", "danger")
         return redirect(url_for('calendar'))
 
-@app.route("/calendar-oauth2callback")
+@app.route("/calendar_oauth2callback")
 def calendar_oauth2callback():
     """Handle OAuth callback from Google for Calendar"""
     user = current_user()
