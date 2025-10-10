@@ -849,8 +849,15 @@ def create_checkout_session():
     
     user = current_user()
     try:
-        # Use current request host for redirects (works in dev and production)
-        domain = request.host
+        # Build base URL using request's scheme and host (without port for production domains)
+        if request.host.endswith('.replit.app') or request.host.endswith('.replit.dev'):
+            base_url = f"{request.scheme}://{request.host}"
+        elif 'smartoffice-ai.com' in request.host:
+            base_url = f"https://{request.host.split(':')[0]}"  # Remove any port
+        else:
+            base_url = f"{request.scheme}://{request.host.split(':')[0]}"
+        
+        print(f"🔗 Stripe redirect base URL: {base_url}")
         
         # Create or retrieve Stripe customer
         customer_id = user.get('stripe_customer_id')
@@ -890,9 +897,10 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='subscription',
-            success_url=f'https://{domain}/success?session_id={{CHECKOUT_SESSION_ID}}',
-            cancel_url=f'https://{domain}/cancel',
-            metadata={'user_id': user['id']}
+            success_url=f'{base_url}/success?session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=f'{base_url}/cancel',
+            metadata={'user_id': user['id']},
+            client_reference_id=str(user['id'])  # Additional user tracking
         )
         
         print(f"Stripe checkout session created: {checkout_session.id}")
@@ -917,10 +925,12 @@ def success():
         try:
             # Retrieve the session to confirm payment
             checkout_session = stripe.checkout.Session.retrieve(session_id)
+            print(f"💳 Processing payment success for session: {session_id}")
+            print(f"Payment status: {checkout_session.payment_status}")
             
             if checkout_session.payment_status == 'paid':
-                # Get user_id from Stripe metadata
-                user_id = checkout_session.metadata.get('user_id')
+                # Get user_id from Stripe metadata or client_reference_id
+                user_id = checkout_session.metadata.get('user_id') or checkout_session.client_reference_id
                 
                 if user_id:
                     # Calculate subscription end date (30 days from now)
@@ -935,21 +945,32 @@ def success():
                     conn.commit()
                     conn.close()
                     
-                    # Re-establish user session
+                    # Re-establish user session (important for redirect)
                     session['user_id'] = int(user_id)
-                    flash("Subscription activated successfully!", "success")
+                    flash("🎉 Subscription activated successfully! You now have full access to all features.", "success")
                     print(f"✅ Subscription activated for user {user_id}")
+                    
+                    # Always redirect to dashboard after successful payment
+                    return redirect(url_for('index'))
+                else:
+                    print(f"❌ No user_id found in Stripe session metadata")
         except Exception as e:
             print(f"❌ Error processing successful payment: {e}")
+            flash("Payment processed, but there was an error activating your subscription. Please contact support.", "warning")
     
-    # Redirect to dashboard if logged in, otherwise show success page
-    if session.get('user_id'):
-        return redirect(url_for('index'))
+    # If we reach here, either no session_id or payment not confirmed
+    # Show success page with manual login prompt
     return render_template("success.html")
 
 @app.route("/cancel")
 def cancel():
     """Handle cancelled payment"""
+    print("❌ User cancelled Stripe checkout")
+    flash("Payment cancelled. You can try again anytime.", "info")
+    
+    # Redirect logged-in users to pricing, others to homepage
+    if session.get('user_id'):
+        return redirect(url_for('pricing'))
     return render_template("cancel.html")
 
 @app.route("/gmail-authorize")
