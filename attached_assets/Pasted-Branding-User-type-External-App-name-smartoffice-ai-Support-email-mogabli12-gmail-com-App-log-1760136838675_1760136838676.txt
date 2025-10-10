@@ -1,0 +1,52 @@
+Branding
+User type
+External
+App name
+smartoffice-ai
+Support email
+mogabli12@gmail.com
+App logo
+Current app logo
+Application Homepage link
+https://www.smartoffice-ai.com
+Application privacy policy link
+https://www.smartoffice-ai.com/privacy
+Application Terms of Service link
+https://www.smartoffice-ai.com/terms
+Authorised domains
+smartoffice-mogabli1.replit.app
+smartoffice-ai.com
+Contact email addresses
+mogabli12@gmail.com
+Data access
+API
+Scope
+User-facing description
+.../auth/calendar.readonly	See and download any calendar that you can access using your Google Calendar
+Scope justifications
+Sensitive scopes
+SmartOffice AI is an intelligent admin assistant for small businesses and professionals. We use calendar.readonly scope to: - Display upcoming calendar events in the user's dashboard - Include calendar data in automated weekly reports (PDF/Word) - Help users manage their schedules more efficiently The calendar data is only read (view-only access) and displayed back to the user who owns it. We do not store, share, or transmit this data to third parties. Each user connects their own Google Calendar account for their personal use only.
+Video link
+https://youtu.be/wkgMIryRKoE
+Additional info
+Share any final details about your app. Include any information that will help us with verification, like test user credentials, the project IDs of any other projects that use OAuth, etc.
+
+
+
+Test User Credentials for Verification:
+- Email: mogabli12@gmail.com
+- This is a working test account that has full access to the app
+
+Project Details:
+- Project ID: smartofficeai-474419
+- This is the only Google Cloud project using these OAuth credentials
+- The app uses per-user OAuth (each user connects their own Gmail/Calendar)
+
+App Features:
+- Users connect their personal Gmail and Google Calendar accounts
+- All data stays with the user - we don't store or share their data
+- The app displays their emails and calendar events in a dashboard
+- Users can generate reports from their own data
+
+The demo video showcases the complete OAuth flow, including the warning screen for unverified apps.
+698 / 1000
