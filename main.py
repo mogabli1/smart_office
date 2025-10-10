@@ -879,7 +879,7 @@ def create_checkout_session():
             conn.close()
         
         # Create checkout session
-        print(f"Creating Stripe checkout for user {user['id']} with domain {domain}")
+        print(f"Creating Stripe checkout for user {user['id']} with base_url {base_url}")
         checkout_session = stripe.checkout.Session.create(
             customer=customer_id,
             line_items=[{
