@@ -4,45 +4,85 @@
     <div class="container">
       <h1 class="display-5 fw-bold mb-4">{{ t('welcome') }}, {{ user.name if user else 'User' }}!</h1>
       
-      {# Subscription alerts temporarily hidden for testing #}
-      {# All features are accessible without subscription for testing purposes #}
+      {% if not has_subscription %}
+      <div class="alert alert-warning shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-triangle-fill {% if lang == 'ar' %}ms-3{% else %}me-3{% endif %}" style="font-size: 2rem;"></i>
+          <div class="flex-grow-1">
+            <h5 class="alert-heading mb-1">{{ t('upgrade_to_premium') }}</h5>
+            <p class="mb-2">{{ t('free_plan') }}. {{ t('upgrade_message') }}</p>
+            <a href="{{ url_for('pricing') }}" class="btn btn-warning btn-sm">
+              <i class="bi bi-star-fill {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>{{ t('view_plans') }}
+            </a>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-success shadow-sm mb-4" role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-check-circle-fill {% if lang == 'ar' %}ms-3{% else %}me-3{% endif %}" style="font-size: 2rem;"></i>
+          <div class="flex-grow-1">
+            <h5 class="alert-heading mb-1">{{ t('premium_active') }}</h5>
+            <p class="mb-0">{{ t('full_access') }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
       
       <div class="row g-4">
         <div class="col-md-4">
-          <div class="card shadow-sm hover-card h-100">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
             <div class="card-body text-center p-4">
               <div class="feature-icon bg-primary bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
                 <i class="bi bi-envelope-fill" style="font-size: 2rem;"></i>
               </div>
               <h3 class="mb-3">{{ t('email') }}</h3>
               <p class="text-muted mb-4">{{ t('manage_inbox') }}</p>
+              {% if has_subscription %}
               <a href="{{ url_for('email') }}" class="btn btn-primary">{{ t('view_inbox') }}</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>{{ t('premium_only') }}
+              </button>
+              {% endif %}
             </div>
           </div>
         </div>
         
         <div class="col-md-4">
-          <div class="card shadow-sm hover-card h-100">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
             <div class="card-body text-center p-4">
               <div class="feature-icon bg-success bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
                 <i class="bi bi-calendar-event-fill" style="font-size: 2rem;"></i>
               </div>
               <h3 class="mb-3">{{ t('calendar') }}</h3>
               <p class="text-muted mb-4">{{ t('stay_on_schedule') }}</p>
+              {% if has_subscription %}
               <a href="{{ url_for('calendar') }}" class="btn btn-success">{{ t('view_calendar') }}</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>{{ t('premium_only') }}
+              </button>
+              {% endif %}
             </div>
           </div>
         </div>
         
         <div class="col-md-4">
-          <div class="card shadow-sm hover-card h-100">
+          <div class="card shadow-sm hover-card h-100 {% if not has_subscription %}opacity-75{% endif %}">
             <div class="card-body text-center p-4">
               <div class="feature-icon bg-info bg-gradient text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
                 <i class="bi bi-file-earmark-text-fill" style="font-size: 2rem;"></i>
               </div>
               <h3 class="mb-3">{{ t('reports') }}</h3>
               <p class="text-muted mb-4">{{ t('generate_reports') }}</p>
+              {% if has_subscription %}
               <a href="{{ url_for('reports') }}" class="btn btn-info">{{ t('create_report') }}</a>
+              {% else %}
+              <button class="btn btn-outline-secondary" disabled>
+                <i class="bi bi-lock-fill {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>{{ t('premium_only') }}
+              </button>
+              {% endif %}
             </div>
           </div>
         </div>
