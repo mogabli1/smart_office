@@ -849,14 +849,11 @@ def create_checkout_session():
     
     user = current_user()
     try:
-        # Get domain for redirect URLs
-        domain = os.environ.get('REPLIT_DEV_DOMAIN')
-        if not domain:
-            domains = os.environ.get('REPLIT_DOMAINS', '')
-            if domains:
-                domain = domains.split(',')[0]
+        # Use published domain for reliable redirects
+        domain = 'www.smartoffice-ai.com'
         
-        if not domain:
+        # Fallback to current host if published domain not available
+        if not domain or 'replit' in request.host:
             domain = request.host
         
         # Create or retrieve Stripe customer
@@ -916,7 +913,6 @@ def create_checkout_session():
         return redirect(url_for("pricing"))
 
 @app.route("/success")
-@login_required
 def success():
     """Handle successful payment"""
     session_id = request.args.get('session_id')
@@ -927,23 +923,32 @@ def success():
             checkout_session = stripe.checkout.Session.retrieve(session_id)
             
             if checkout_session.payment_status == 'paid':
-                user = current_user()
-                # Calculate subscription end date (30 days from now)
-                end_date = datetime.now() + timedelta(days=30)
+                # Get user_id from Stripe metadata
+                user_id = checkout_session.metadata.get('user_id')
                 
-                # Update user subscription status
-                conn = get_db()
-                conn.execute(
-                    "UPDATE users SET subscription_status = ?, subscription_end_date = ? WHERE id = ?",
-                    ('active', end_date.isoformat(), user['id'])
-                )
-                conn.commit()
-                conn.close()
-                
-                flash("Subscription activated successfully!", "success")
+                if user_id:
+                    # Calculate subscription end date (30 days from now)
+                    end_date = datetime.now() + timedelta(days=30)
+                    
+                    # Update user subscription status
+                    conn = get_db()
+                    conn.execute(
+                        "UPDATE users SET subscription_status = ?, subscription_end_date = ? WHERE id = ?",
+                        ('active', end_date.isoformat(), user_id)
+                    )
+                    conn.commit()
+                    conn.close()
+                    
+                    # Re-establish user session
+                    session['user_id'] = int(user_id)
+                    flash("Subscription activated successfully!", "success")
+                    print(f"✅ Subscription activated for user {user_id}")
         except Exception as e:
-            print(f"Error processing successful payment: {e}")
+            print(f"❌ Error processing successful payment: {e}")
     
+    # Redirect to dashboard if logged in, otherwise show success page
+    if session.get('user_id'):
+        return redirect(url_for('index'))
     return render_template("success.html")
 
 @app.route("/cancel")
