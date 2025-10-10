@@ -1151,10 +1151,10 @@ def calendar_oauth2callback():
 def email():
     user = current_user()
     
-    # Subscription check temporarily disabled for testing
-    # if not has_active_subscription(user):
-    #     flash("Email features require a Premium subscription.", "warning")
-    #     return redirect(url_for('pricing'))
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Email features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
     
     gmail_service = get_gmail_service(user['id'])
     
@@ -1214,10 +1214,10 @@ def email_detail(email_id):
     """View full email with AI reply suggestions"""
     user = current_user()
     
-    # Subscription check temporarily disabled for testing
-    # if not has_active_subscription(user):
-    #     flash("Email features require a Premium subscription.", "warning")
-    #     return redirect(url_for('pricing'))
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Email features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
     
     gmail_service = get_gmail_service(user['id'])
     
@@ -1352,10 +1352,10 @@ def email_detail(email_id):
 def calendar():
     user = current_user()
     
-    # Subscription check temporarily disabled for testing
-    # if not has_active_subscription(user):
-    #     flash("Calendar features require a Premium subscription.", "warning")
-    #     return redirect(url_for('pricing'))
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Calendar features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
     
     # Use per-user calendar service instead of project-level connector
     calendar_service = get_calendar_service_for_user(user['id'])
@@ -1411,10 +1411,10 @@ def calendar():
 def reports():
     user = current_user()
     
-    # Subscription check temporarily disabled for testing
-    # if not has_active_subscription(user):
-    #     flash("Report features require a Premium subscription.", "warning")
-    #     return redirect(url_for('pricing'))
+    # Check subscription
+    if not has_active_subscription(user):
+        flash("Report features require a Premium subscription.", "warning")
+        return redirect(url_for('pricing'))
     
     gmail_service = get_gmail_service(user['id'])
     calendar_service = get_calendar_service_for_user(user['id'])
