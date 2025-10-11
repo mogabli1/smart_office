@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <h1 class="mb-4">Privacy Policy</h1>
+      <p class="text-muted mb-4"><strong>Last Updated:</strong> October 8, 2025</p>
+
+      <h2 class="h4 mt-4 mb-3">1. Introduction</h2>
+      <p>SmartOffice AI ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our intelligent administrative assistant service.</p>
+
+      <h2 class="h4 mt-4 mb-3">2. Information We Collect</h2>
+      <h3 class="h5 mt-3">2.1 Account Information</h3>
+      <ul>
+        <li>Name and email address (for account creation)</li>
+        <li>Password (securely hashed and encrypted)</li>
+        <li>Subscription and payment information (processed by Stripe)</li>
+      </ul>
+
+      <h3 class="h5 mt-3">2.2 Google Account Data</h3>
+      <p>When you connect your Google account, we access:</p>
+      <ul>
+        <li><strong>Gmail:</strong> Read-only access to your inbox to provide email organization and AI-powered features</li>
+        <li><strong>Google Calendar:</strong> Read-only access to view your calendar events</li>
+      </ul>
+      <p><strong>Important:</strong> We only access data you explicitly authorize. Your Google credentials are securely stored using OAuth 2.0 tokens and are encrypted.</p>
+
+      <h2 class="h4 mt-4 mb-3">3. How We Use Your Information</h2>
+      <ul>
+        <li><strong>Email Analysis:</strong> AI-powered priority categorization and reply suggestions</li>
+        <li><strong>Calendar Management:</strong> Display upcoming events and meeting information</li>
+        <li><strong>Report Generation:</strong> Create PDF and Word reports containing your email and calendar summaries</li>
+        <li><strong>Service Improvement:</strong> Analyze aggregated, anonymized data to improve our AI models</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">4. Data Storage & Security</h2>
+      <ul>
+        <li>All data is stored securely using industry-standard encryption</li>
+        <li>OAuth tokens are encrypted and stored per user for complete data isolation</li>
+        <li>We do not share your Gmail or Calendar data with third parties</li>
+        <li>Payment information is processed securely through Stripe (we never store credit card details)</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">5. Third-Party Services</h2>
+      <p>We use the following third-party services:</p>
+      <ul>
+        <li><strong>OpenAI:</strong> For AI-powered email analysis and reply suggestions (email content is processed but not stored by OpenAI)</li>
+        <li><strong>Stripe:</strong> For secure payment processing</li>
+        <li><strong>Google APIs:</strong> For Gmail and Calendar access (subject to Google's Privacy Policy)</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">6. Your Rights</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access your personal data at any time</li>
+        <li>Revoke Gmail/Calendar access (disconnect integrations)</li>
+        <li>Delete your account and all associated data</li>
+        <li>Request a copy of your data</li>
+        <li>Cancel your subscription at any time</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">7. Data Retention</h2>
+      <ul>
+        <li>We retain your account data while your account is active</li>
+        <li>OAuth tokens are deleted when you disconnect Gmail/Calendar</li>
+        <li>When you delete your account, all data is permanently removed within 30 days</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">8. Google API Services User Data Policy</h2>
+      <p>SmartOffice AI's use of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+      <h2 class="h4 mt-4 mb-3">9. Children's Privacy</h2>
+      <p>Our service is not intended for users under 18 years of age. We do not knowingly collect personal information from children.</p>
+
+      <h2 class="h4 mt-4 mb-3">10. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. We will notify you of any changes by updating the "Last Updated" date and posting the new policy on this page.</p>
+
+      <h2 class="h4 mt-4 mb-3">11. Contact Us</h2>
+      <p>If you have questions about this Privacy Policy, please contact us at:</p>
+      <p><strong>Email:</strong> info@smartoffice-ai.com</p>
+
+      <div class="mt-5 mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
