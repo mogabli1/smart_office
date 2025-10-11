@@ -220,7 +220,8 @@ TRANSLATIONS = {
         'payment_cancel_msg': 'Your subscription payment was cancelled. No charges were made.',
         'try_again': 'You can try again anytime to unlock premium features.',
         'back_to_pricing': 'Back to Pricing',
-        'reports_description': 'Generate weekly/monthly activity reports from your emails and calendar'
+        'reports_description': 'Generate weekly/monthly activity reports from your emails and calendar',
+        'pricing': 'Pricing'
     },
     'ar': {
         'app_name': 'سمارت أوفيس AI',
@@ -301,7 +302,8 @@ TRANSLATIONS = {
         'payment_cancel_msg': 'تم إلغاء دفع اشتراكك. لم يتم فرض أي رسوم.',
         'try_again': 'يمكنك المحاولة مرة أخرى في أي وقت لفتح الميزات المميزة.',
         'back_to_pricing': 'العودة إلى الأسعار',
-        'reports_description': 'إنشاء تقارير نشاط أسبوعية/شهرية من رسائلك البريدية والتقويم'
+        'reports_description': 'إنشاء تقارير نشاط أسبوعية/شهرية من رسائلك البريدية والتقويم',
+        'pricing': 'الأسعار'
     }
 }
 
