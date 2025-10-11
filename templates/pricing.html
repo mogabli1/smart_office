@@ -8,28 +8,8 @@
   </div>
 
   <div class="row justify-content-center">
-    <!-- Free Plan -->
-    <div class="col-md-5 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body p-4">
-          <div class="text-center mb-4">
-            <h3 class="fw-bold">{{ t('free') }}</h3>
-            <div class="display-4 fw-bold my-3">$0<small class="fs-5 text-muted">{{ t('per_month') }}</small></div>
-          </div>
-          <ul class="list-unstyled mb-4">
-            <li class="mb-3"><i class="bi bi-check-circle-fill text-success {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('basic_dashboard') }}</li>
-            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('email_management') }}</li>
-            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('calendar_integration') }}</li>
-            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('report_generation') }}</li>
-            <li class="mb-3"><i class="bi bi-x-circle-fill text-muted {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('ai_features') }}</li>
-          </ul>
-          <button class="btn btn-outline-secondary w-100" disabled>{{ t('current_plan') }}</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Premium Plan -->
-    <div class="col-md-5 mb-4">
+    <!-- Premium Plan (Only Option) -->
+    <div class="col-md-6 mb-4">
       <div class="card shadow-lg border-primary h-100" style="border-width: 2px;">
         <div class="card-header bg-primary text-white text-center py-3">
           <h5 class="mb-0 fw-bold"><i class="bi bi-star-fill {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>{{ t('recommended') }}</h5>
