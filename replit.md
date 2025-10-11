@@ -6,11 +6,13 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 **Current Status**: Development environment configured and running successfully on Replit.
 
 ## Recent Changes (October 10, 2025)
-- **✅ SUBSCRIPTION SYSTEM RE-ENABLED & FIXED** - Stripe payments fully functional with improved redirect handling
-- **Improved Stripe Checkout** - Fixed redirect URI issues with better base URL construction for both Replit and custom domains
-- **Enhanced Success Flow** - Better session persistence and user tracking through payment process
-- **Dashboard UI Restored** - Subscription status alerts and locked feature buttons for free users
-- **All Premium Features Protected** - Email, Calendar, and Reports require active subscription
+- **✅ SUBSCRIPTION SYSTEM FULLY OPERATIONAL** - Stripe payments working perfectly with all fixes applied
+- **Pricing Page Simplified** - Removed free tier, showing only Premium plan ($29/month)
+- **Premium Subscriber Protection** - Users with active subscriptions automatically redirected from pricing to dashboard
+- **Calendar OAuth Fixed** - Updated routes to use underscores (calendar_authorize, calendar_oauth2callback) matching Google Cloud Console
+- **Trial Period Feature Added (Disabled)** - Ready-to-use 14-day trial system, currently disabled via config flag
+- **Easy Pricing Control** - Added PRICING_ENABLED flag to quickly enable/disable entire pricing system
+- **All Features Fully Translated** - Complete Arabic translation for pricing page and all UI elements
 
 ## Previous Changes (October 9, 2025)
 - **✅ STRIPE SUBSCRIPTIONS INITIALLY ACTIVE** - Users can subscribe to Premium plan ($29/month) via Stripe checkout
@@ -173,10 +175,18 @@ SmartOffice AI is a Flask-based web application that serves as an intelligent ad
 
 ## Configuration
 
+### System Configuration Flags (in main.py)
+- `PRICING_ENABLED = True`: Set to False to completely disable pricing/subscription system
+- `FREE_TRIAL_ENABLED = False`: Set to True to enable 14-day free trial for new users (currently disabled)
+- `FREE_TRIAL_DAYS = 14`: Number of days for free trial period
+
 ### Environment Variables
 - `SECRET_KEY`: Flask session secret (defaults to "dev-secret-change-me" in development)
 - `DB_PATH`: Database file path (defaults to "smartoffice.db")
 - `PORT`: Server port (defaults to 5000)
+- `STRIPE_SECRET_KEY`: Stripe API key for payment processing
+- `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET`: Google OAuth credentials
+- `OPENAI_API_KEY`: OpenAI API key for AI features
 
 ### Development Setup
 - Server runs on `0.0.0.0:5000` with debug mode enabled
