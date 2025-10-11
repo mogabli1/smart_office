@@ -940,7 +940,7 @@ def create_checkout_session():
             line_items=[{
                 'price_data': {
                     'currency': 'usd',
-                    'unit_amount': 2900,  # $29.00 in cents
+                    'unit_amount': 1999,  # $19.99 in cents
                     'recurring': {
                         'interval': 'month'
                     },
