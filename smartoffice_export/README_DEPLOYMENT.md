@@ -18,7 +18,117 @@ smartoffice_export/
 
 ## 🚀 Deployment Options
 
-### Option 1: Heroku (Easiest)
+### Option 1: Hostinger VPS (Most Affordable - $4.99/month)
+
+**Best for**: Budget-conscious users who want reliable hosting at the lowest price.
+
+Hostinger requires **VPS hosting** for Flask apps (shared hosting doesn't support Python).
+
+**Pricing**: Starting at $4.99/month (KVM 1 plan)
+- 1 vCPU, 4GB RAM, 50GB NVMe Storage
+- 4TB Bandwidth, Dedicated IP
+- Weekly backups, DDoS protection
+- 99.9% uptime guarantee
+
+#### Step-by-Step Deployment on Hostinger:
+
+1. **Purchase Hostinger VPS** (https://www.hostinger.com/vps-hosting)
+   - Choose KVM 1 or higher plan
+   - Select Ubuntu 24.04 as operating system
+
+2. **Access your VPS via SSH**:
+   ```bash
+   ssh root@your-server-ip
+   ```
+
+3. **Install Python and dependencies**:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install python3 python3-pip python3-venv nginx -y
+   ```
+
+4. **Upload your SmartOffice AI files**:
+   ```bash
+   # On your local machine, upload files
+   scp -r smartoffice_export/* root@your-server-ip:/var/www/smartoffice/
+   ```
+
+5. **Set up virtual environment**:
+   ```bash
+   cd /var/www/smartoffice
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   pip install gunicorn
+   ```
+
+6. **Create systemd service** (`/etc/systemd/system/smartoffice.service`):
+   ```ini
+   [Unit]
+   Description=SmartOffice AI Flask App
+   After=network.target
+
+   [Service]
+   User=www-data
+   WorkingDirectory=/var/www/smartoffice
+   Environment="PATH=/var/www/smartoffice/venv/bin"
+   Environment="SECRET_KEY=your-secret-key"
+   Environment="STRIPE_SECRET_KEY=your-stripe-key"
+   Environment="GOOGLE_CLIENT_ID=your-google-id"
+   Environment="GOOGLE_CLIENT_SECRET=your-google-secret"
+   Environment="OPENAI_API_KEY=your-openai-key"
+   ExecStart=/var/www/smartoffice/venv/bin/gunicorn --bind 0.0.0.0:8000 --workers 4 main:app
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+7. **Start the service**:
+   ```bash
+   sudo systemctl enable smartoffice
+   sudo systemctl start smartoffice
+   ```
+
+8. **Configure Nginx** (`/etc/nginx/sites-available/smartoffice`):
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+
+       location / {
+           proxy_pass http://127.0.0.1:8000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       }
+   }
+   ```
+
+9. **Enable Nginx configuration**:
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/smartoffice /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+10. **Set up SSL certificate** (free with Let's Encrypt):
+    ```bash
+    sudo apt install certbot python3-certbot-nginx -y
+    sudo certbot --nginx -d your-domain.com
+    ```
+
+11. **Configure firewall**:
+    ```bash
+    sudo ufw allow 80/tcp
+    sudo ufw allow 443/tcp
+    sudo ufw enable
+    ```
+
+**Done!** Your app is live on Hostinger! 🎉
+
+---
+
+### Option 2: Heroku (Easiest - No Server Management)
 
 1. **Install Heroku CLI**: https://devcenter.heroku.com/articles/heroku-cli
 2. **Login to Heroku**:
@@ -262,11 +372,14 @@ All dependencies are in `requirements.txt`:
 
 | Platform | Cost/Month | Best For |
 |----------|------------|----------|
-| Heroku | $7-25 | Easy deployment |
+| **Hostinger VPS** | **$4.99-20** | **Most affordable, full control** |
 | Railway | $5-10 | Modern, simple |
+| VPS (Generic) | $5-10 | Full control |
 | DigitalOcean | $6-12 | Good balance |
+| Heroku | $7-25 | Easy deployment |
 | AWS | $5-20 | Scalability |
-| VPS | $5-10 | Full control |
+
+**Winner**: Hostinger VPS at $4.99/month is the most affordable option! 🏆
 
 ## 🆘 Support
 
