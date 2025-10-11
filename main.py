@@ -25,6 +25,14 @@ app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
 
+# ============ PRICING SYSTEM CONFIGURATION ============
+# Set to False to completely disable pricing/subscription system
+PRICING_ENABLED = True  # Change to False to disable pricing page and subscriptions
+
+# Set to True to enable free trial period for new users (currently disabled)
+FREE_TRIAL_ENABLED = False  # When enabled, new users get X days of free access
+FREE_TRIAL_DAYS = 14  # Number of days for free trial
+
 # Stripe configuration
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 if STRIPE_SECRET_KEY:
@@ -709,22 +717,46 @@ def current_user():
     return dict(row) if row else None
 
 def has_active_subscription(user):
-    """Check if user has an active subscription"""
+    """Check if user has an active subscription (includes trial period)"""
     if not user:
         return False
     
     status = user.get('subscription_status', 'free')
+    
+    # Active paid subscription
     if status == 'active':
         return True
     
-    # Check if subscription end date is in the future
-    end_date_str = user.get('subscription_end_date')
-    if end_date_str:
-        try:
-            end_date = datetime.fromisoformat(end_date_str)
-            return datetime.now() < end_date
-        except:
-            pass
+    # Trial period (when FREE_TRIAL_ENABLED is True)
+    if status == 'trial':
+        end_date_str = user.get('subscription_end_date')
+        if end_date_str:
+            try:
+                end_date = datetime.fromisoformat(end_date_str)
+                if datetime.now() < end_date:
+                    return True
+                else:
+                    # Trial expired, downgrade to free
+                    conn = get_db()
+                    conn.execute(
+                        "UPDATE users SET subscription_status = 'free', subscription_end_date = NULL WHERE id = ?",
+                        (user['id'],)
+                    )
+                    conn.commit()
+                    conn.close()
+                    return False
+            except:
+                pass
+    
+    # Check if paid subscription end date is in the future
+    if status == 'active':
+        end_date_str = user.get('subscription_end_date')
+        if end_date_str:
+            try:
+                end_date = datetime.fromisoformat(end_date_str)
+                return datetime.now() < end_date
+            except:
+                pass
     
     return False
 
@@ -791,9 +823,20 @@ def register():
         pw_hash = generate_password_hash(password)
         conn = get_db()
         try:
-            conn.execute("INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)", (email, name, pw_hash))
+            # TRIAL PERIOD FEATURE (Currently Disabled)
+            # When FREE_TRIAL_ENABLED = True, new users get automatic trial access
+            if FREE_TRIAL_ENABLED:
+                trial_end = datetime.now() + timedelta(days=FREE_TRIAL_DAYS)
+                conn.execute(
+                    "INSERT INTO users (email, name, password_hash, subscription_status, subscription_end_date) VALUES (?, ?, ?, ?, ?)", 
+                    (email, name, pw_hash, 'trial', trial_end.isoformat())
+                )
+                flash(f"🎉 Account created! You have {FREE_TRIAL_DAYS} days of free trial access. Please log in.", "success")
+            else:
+                conn.execute("INSERT INTO users (email, name, password_hash) VALUES (?, ?, ?)", (email, name, pw_hash))
+                flash("Account created. Please log in.", "success")
+            
             conn.commit()
-            flash("Account created. Please log in.", "success")
             return redirect(url_for("login"))
         except sqlite3.IntegrityError:
             flash("Email already registered.", "danger")
@@ -837,6 +880,11 @@ def sitemap():
 @app.route("/pricing")
 def pricing():
     """Show pricing plans"""
+    # Check if pricing system is enabled
+    if not PRICING_ENABLED:
+        flash("Subscription system is currently unavailable. Please check back later.", "info")
+        return redirect(url_for('index'))
+    
     # If user is logged in and has active subscription, redirect to dashboard
     if session.get('user_id'):
         user = current_user()
