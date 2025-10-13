@@ -29,8 +29,8 @@ DB_PATH = os.environ.get("DB_PATH", "smartoffice.db")
 # Set to False to completely disable pricing/subscription system
 PRICING_ENABLED = True  # Change to False to disable pricing page and subscriptions
 
-# Set to True to enable free trial period for new users (currently disabled)
-FREE_TRIAL_ENABLED = False  # When enabled, new users get X days of free access
+# Set to True to enable free trial period for new users (ENABLED FOR GOOGLE TESTING)
+FREE_TRIAL_ENABLED = True  # When enabled, new users get X days of free access
 FREE_TRIAL_DAYS = 14  # Number of days for free trial
 
 # Stripe configuration
