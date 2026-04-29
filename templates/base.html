@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
+    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; text-align: center; padding: 12px 20px; font-weight: 600; font-size: 15px; letter-spacing: 0.3px; position: relative; z-index: 9999;">
+      🚧 We are currently updating SmartOffice AI with new and improved services. Registration and login are temporarily disabled. We'll be back soon!
+    </div>
     <nav class="navbar navbar-expand-lg bg-white border-bottom">
       <div class="container">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="{% if session.get('user_id') %}{{ url_for('index') }}{% else %}{{ url_for('landing') }}{% endif %}">

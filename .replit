@@ -35,18 +35,6 @@ outputType = "webview"
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 34149
-externalPort = 3002
-
-[[ports]]
-localPort = 34479
-externalPort = 3001
-
-[[ports]]
-localPort = 38819
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "autoscale"
 run = ["gunicorn", "--bind=0.0.0.0:5000", "--reuse-port", "--workers=2", "main:app"]

@@ -5,16 +5,19 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <h3 class="mb-3">{{ t('sign_in') }}</h3>
+        <div class="alert alert-warning text-center" role="alert">
+          🚧 Login is temporarily disabled while we update our services. Please check back soon!
+        </div>
         <form method="post">
           <div class="mb-3">
             <label class="form-label">{{ t('email') }}</label>
-            <input name="email" type="email" class="form-control" placeholder="you@example.com" required>
+            <input name="email" type="email" class="form-control" placeholder="you@example.com" disabled>
           </div>
           <div class="mb-3">
             <label class="form-label">{{ t('password') }}</label>
-            <input name="password" type="password" class="form-control" placeholder="••••••••" required>
+            <input name="password" type="password" class="form-control" placeholder="••••••••" disabled>
           </div>
-          <button type="submit" class="btn btn-primary w-100">{{ t('login') }}</button>
+          <button type="submit" class="btn btn-primary w-100" disabled>{{ t('login') }}</button>
         </form>
         <hr>
         <p class="mb-0">{{ t('dont_have_account') }} <a href="{{ url_for('register') }}">{{ t('sign_up') }}</a></p>
