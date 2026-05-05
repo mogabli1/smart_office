@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | SmartOffice AI</title>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="static/css/landing.css">
+  
+  <!-- Icons (FontAwesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <style>
+    .contact-wrapper {
+      max-width: 900px;
+      margin: 180px auto 100px;
+      padding: 0 40px;
+    }
+    .contact-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      padding: 80px;
+      border-radius: 32px;
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 500;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--white);
+      font-family: inherit;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    select option {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-top: 80px;
+      text-align: center;
+    }
+    .info-item i {
+      font-size: 2.5rem;
+      color: var(--accent-color);
+      margin-bottom: 20px;
+    }
+    .info-item h4 {
+      color: var(--white);
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    .info-item p {
+      color: var(--text-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Decorative Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Navigation -->
+  <nav class="top-nav scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-small">SO</div>
+        <span class="brand-name">SmartOffice AI</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="index.html#services" class="nav-link">Services</a>
+        <a href="index.html#process" class="nav-link">How it Works</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="contact-wrapper">
+    <div class="contact-card reveal active">
+      <h1 style="margin-bottom: 20px;">Let's Build Something Great</h1>
+      <p class="subtitle" style="margin-bottom: 50px; color: var(--text-light); font-size: 1.1rem;">Tell us about your project, and we'll get back to you within 24 hours to schedule a free chat.</p>
+      
+      <form action="/submit-contact" method="POST">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" name="name" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Business Email</label>
+          <input type="email" id="email" name="email" placeholder="john@company.com" required>
+        </div>
+        <div class="form-group">
+          <label for="interest">What can we help with?</label>
+          <select id="interest" name="interest">
+            <option value="chatbot">Smart AI Chatbot</option>
+            <option value="web">Modern Web Design</option>
+            <option value="automation">Business Automation</option>
+            <option value="whatsapp">WhatsApp AI Bot</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Tell us a bit about your needs</label>
+          <textarea id="message" name="message" rows="5" placeholder="I'm looking to save time on..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 20px;">Send My Request →</button>
+      </form>
+    </div>
+
+    <div class="contact-info reveal">
+      <div class="info-item">
+        <i class="fa-solid fa-envelope"></i>
+        <h4>Email Us</h4>
+        <p>info@smartoffice-ai.com</p>
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-clock"></i>
+        <h4>Fast Response</h4>
+        <p>Usually within 24 hours</p>
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-heart"></i>
+        <h4>Local Support</h4>
+        <p>We're here whenever you need us</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="logo-small">SO</div>
+        <span class="brand-name">SmartOffice AI</span>
+      </div>
+      <div class="footer-links">
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms of Service</a>
+        <a href="./index.html">Back to Home</a>
+      </div>
+    </div>
+    <p class="copyright">© 2026 SmartOffice AI • SMART SOLUTIONS FOR GROWING BUSINESSES</p>
+  </footer>
+
+  <!-- Interactivity Script -->
+  <script src="static/js/script.js"></script>
+</body>
+</html>
