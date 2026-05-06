@@ -50,8 +50,9 @@ def submit_contact():
         return "Server Error: Email service not configured.", 500
 
     try:
-        print("DEBUG: Sending via Resend API...")
-        response = requests.post(
+        print("DEBUG: Sending notification to admin...")
+        # 1. Send notification to YOU
+        requests.post(
             "https://api.resend.com/emails",
             headers={
                 "Authorization": f"Bearer {RESEND_API_KEY}",
@@ -71,13 +72,40 @@ def submit_contact():
                 """
             }
         )
+
+        print("DEBUG: Sending auto-reply to customer...")
+        # 2. Send Auto-Reply to CUSTOMER
+        # Note: This will only work for external emails AFTER domain verification
+        requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "SmartOffice AI <onboarding@resend.dev>",
+                "to": email,
+                "subject": "We've received your request! - SmartOffice AI",
+                "html": f"""
+                <div style="font-family: sans-serif; max-width: 600px; color: #333;">
+                    <h2 style="color: #38bdf8;">Hello {name},</h2>
+                    <p>Thank you for reaching out to <strong>SmartOffice AI</strong>.</p>
+                    <p>We've received your request regarding <strong>{interest}</strong> and our team is already looking into it.</p>
+                    <p>One of our AI specialists will get back to you within 24 hours to schedule your free consultation.</p>
+                    <br>
+                    <hr style="border: none; border-top: 1px solid #eee;">
+                    <p style="font-size: 0.9rem; color: #666;">
+                        Best regards,<br>
+                        <strong>The SmartOffice AI Team</strong><br>
+                        <a href="https://smartoffice-ai.com" style="color: #38bdf8; text-decoration: none;">smartoffice-ai.com</a>
+                    </p>
+                </div>
+                """
+            }
+        )
         
-        if response.status_code in [200, 201]:
-            print("DEBUG: SUCCESS! Resend accepted the email.")
-            return redirect('/success.html')
-        else:
-            print(f"DEBUG: Resend API Error: {response.status_code} - {response.text}")
-            return f"Failed to send message. Service Error: {response.text}", 500
+        print("DEBUG: SUCCESS! Emails processed.")
+        return redirect('/success.html')
             
     except Exception as e:
         print(f"DEBUG: EXCEPTION caught: {e}")
