@@ -39,7 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. Smooth Scrolling for Anchor Links
+    // 4. Mobile Menu Toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navActions = document.querySelector('.nav-actions');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navActions.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navActions.classList.remove('active');
+        });
+    });
+
+    // 5. Smooth Scrolling for Anchor Links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();

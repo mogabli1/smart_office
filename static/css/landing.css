@@ -110,28 +110,85 @@ section, nav, footer { position: relative; z-index: 10; }
 .logo-small {
   background: linear-gradient(135deg, var(--accent-color), var(--cyan-bright));
   color: var(--primary-color);
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 1.1rem;
-  box-shadow: 0 0 25px var(--accent-glow);
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  box-shadow: 0 0 20px var(--accent-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-small::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: rotate(45deg);
+  animation: logo-shine 3s infinite;
+}
+
+@keyframes logo-shine {
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 .brand-name {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--white);
   letter-spacing: -0.5px;
+  background: linear-gradient(to right, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 40px;
+}
+
+/* === Hamburger Menu === */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.menu-toggle .bar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--white);
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-toggle.active .bar:nth-child(1) {
+  transform: translateY(9.5px) rotate(45deg);
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+  transform: translateY(-9.5px) rotate(-45deg);
 }
 
 .nav-link {
@@ -417,7 +474,51 @@ h2 {
   color: var(--text-light);
 }
 
-/* === CTA Section === */
+/* === Why Us Section === */
+.why-us {
+  padding: 140px 40px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.why-features {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.why-feature-item {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start;
+}
+
+.feature-icon {
+  font-size: 1.8rem;
+  color: var(--accent-color);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.why-feature-item h4 {
+  font-size: 1.3rem;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.why-feature-item p {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+/* === Final CTA Section === */
 .cta-final {
   padding: 160px 40px;
   text-align: center;
@@ -491,13 +592,42 @@ footer {
 /* === Responsive === */
 @media (max-width: 1024px) {
   .hero-stats { gap: 40px; }
+  .why-grid { gap: 40px; }
 }
 
 @media (max-width: 768px) {
   h1 { font-size: 3rem; }
   .hero { padding: 160px 24px 80px; }
   .hero-actions { flex-direction: column; }
-  .nav-actions { display: none; }
+  
+  .menu-toggle { display: flex; }
+  
+  .nav-actions {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100vh;
+    background: var(--secondary-color);
+    backdrop-filter: var(--glass-blur);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    border-left: 1px solid var(--glass-border);
+  }
+
+  .nav-actions.active {
+    right: 0;
+  }
+
+  .nav-link { font-size: 1.2rem; }
+
+  .why-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+
   .footer-container { flex-direction: column; gap: 40px; }
   .footer-links { flex-direction: column; gap: 20px; text-align: center; }
   .hero-stats { flex-direction: column; gap: 30px; }
