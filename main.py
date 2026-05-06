@@ -71,11 +71,8 @@ def submit_contact():
     msg.attach(MIMEText(body, 'plain'))
 
     try:
-        print("DEBUG: Connecting to smtp.gmail.com:587...")
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=15)
-        
-        print("DEBUG: Starting TLS...")
-        server.starttls()
+        print("DEBUG: Connecting to smtp.gmail.com:465 (SSL)...")
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=15)
         
         print(f"DEBUG: Attempting login for {GMAIL_USER}...")
         server.login(GMAIL_USER, GMAIL_PASSWORD)
