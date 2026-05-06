@@ -59,7 +59,7 @@ def submit_contact():
                 "Content-Type": "application/json",
             },
             json={
-                "from": "SmartOffice AI <onboarding@resend.dev>",
+                "from": "SmartOffice AI <info@smartoffice-ai.com>",
                 "to": RECEIVER_EMAIL,
                 "subject": f"New Request: {interest} from {name}",
                 "html": f"""
@@ -83,7 +83,7 @@ def submit_contact():
                 "Content-Type": "application/json",
             },
             json={
-                "from": "SmartOffice AI <onboarding@resend.dev>",
+                "from": "SmartOffice AI <info@smartoffice-ai.com>",
                 "to": email,
                 "subject": "We've received your request! - SmartOffice AI",
                 "html": f"""
