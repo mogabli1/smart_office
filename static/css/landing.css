@@ -362,19 +362,28 @@ h2 {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
 }
 
 .service-card {
   background: var(--glass-bg);
-  padding: 50px;
+  padding: 40px;
   border-radius: 20px;
   border: 1px solid var(--glass-border);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   backdrop-filter: var(--glass-blur);
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  .service-card {
+    padding: 30px 24px;
+  }
 }
 
 .service-card:hover {
