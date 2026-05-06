@@ -1,0 +1,67 @@
+1
+00:00:00,000 --> 00:00:05,000
+SmartOffice AI - Gmail & Calendar OAuth Demo
+
+2
+00:00:05,000 --> 00:00:10,000
+Logging in and clicking "Connect Gmail"
+
+3
+00:00:10,000 --> 00:00:15,000
+Google OAuth consent screen - gmail.readonly scope
+
+4
+00:00:15,000 --> 00:00:20,000
+Clicking link to show detailed permissions
+
+5
+00:00:20,000 --> 00:00:27,000
+Gmail.readonly allows: View emails only - NO send/delete permissions
+
+6
+00:00:27,000 --> 00:00:32,000
+This is READ-ONLY access for email categorization
+
+7
+00:00:32,000 --> 00:00:37,000
+Authorizing Gmail access...
+
+8
+00:00:37,000 --> 00:00:42,000
+Emails successfully loaded with AI categories
+
+9
+00:00:42,000 --> 00:00:47,000
+Now connecting Google Calendar
+
+10
+00:00:47,000 --> 00:00:52,000
+OAuth consent screen - calendar.readonly scope
+
+11
+00:00:52,000 --> 00:00:57,000
+Showing detailed calendar permissions
+
+12
+00:00:57,000 --> 00:01:04,000
+Calendar.readonly: View events only - NO create/edit/delete permissions
+
+13
+00:01:04,000 --> 00:01:09,000
+READ-ONLY access ensures calendar data security
+
+14
+00:01:09,000 --> 00:01:14,000
+Authorizing Calendar access...
+
+15
+00:01:14,000 --> 00:01:19,000
+Calendar events successfully displayed
+
+16
+00:01:19,000 --> 00:01:25,000
+Both Gmail and Calendar use read-only scopes for user safety
+
+17
+00:01:25,000 --> 00:01:30,000
+Thank you for reviewing SmartOffice AI

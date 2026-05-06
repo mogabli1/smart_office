@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-__pycache__/
-*.py[cod]
-*$py.class
-.env
-.venv
-venv/
-ENV/
-.idea/
-.vscode/
-*.log
-=======
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -34,27 +19,30 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual Environment
-.pythonlibs/
-poetry.lock
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
+smartoffice.db
 
 # Environment variables
 .env
 .env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
@@ -63,8 +51,6 @@ Thumbs.db
 # Logs
 *.log
 
-# OAuth tokens
-token.json
-test_token.json
-client_secret*.json
->>>>>>> 11ca72ffd8e8a97e9d7995f2824de70c7cd5a2e2
+# Temporary files
+*.tmp
+*.bak

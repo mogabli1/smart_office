@@ -1,0 +1,34 @@
+body { font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+.title-shadow { text-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.navbar .navbar-brand { letter-spacing: 0.3px; }
+.card { border-radius: 1rem; }
+.btn { border-radius: 0.8rem; }
+
+.logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-icon-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}

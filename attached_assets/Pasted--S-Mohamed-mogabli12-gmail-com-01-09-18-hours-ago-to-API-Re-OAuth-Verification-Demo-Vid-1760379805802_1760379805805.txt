@@ -1,0 +1,97 @@
+
+S Mohamed <mogabli12@gmail.com>
+01:09 (18 hours ago)
+to API
+
+Re: OAuth Verification - Demo Video & Redirect URI Fixed
+Hello Third Party Data Safety Team,
+
+Thank you for your feedback regarding project 596418050127 (Project ID: smartofficeai-474419).
+
+I have addressed both issues you highlighted:
+
+1. ✅ DEMO VIDEO SUBMITTED
+
+Demo Video Link: https://youtu.be/Rjp_iSLuFDI
+
+The video comprehensively demonstrates:
+
+• Complete OAuth 2.0 consent flow for Gmail API
+  - Scope: https://www.googleapis.com/auth/gmail.readonly (read-only)
+  - Shows Google's official consent screen
+  - User grants permission explicitly
+  - Successful token storage and retrieval
+
+• Complete OAuth 2.0 consent flow for Google Calendar API
+  - Scope: https://www.googleapis.com/auth/calendar.readonly (read-only)
+  - Shows the authorisation process
+  - Displays calendar events after authorisation
+
+• Application Use Cases:
+  - AI-powered email priority categorisation (Urgent/Important/Normal)
+  - Smart reply suggestions in multiple tones
+  - Automated PDF/Word report generation combining email and calendar data
+  - Bilingual interface (English/Arabic) for broader accessibility
+
+• Data Privacy & Security:
+  - Each user connects their own Gmail and Google Calendar accounts
+  - OAuth tokens are stored per-user with encryption
+  - No shared data between users
+  - Users can revoke access anytime via Google Account settings
+  - Application requests minimum necessary scopes (read-only)
+
+2. ✅ REDIRECT URI ISSUE RESOLVED
+
+All authorised redirect URIs have been updated in Google Cloud Console for the project smartofficeai-474419.
+
+Production Redirect URIs (Primary):
+• https://www.smartoffice-ai.com/oauth2callback
+• https://www.smartoffice-ai.com/calendar_oauth2callback
+
+Replit Deployment URIs (Secondary):
+• https://smartoffice-mogabli1.replit.app/oauth2callback
+• https://smartoffice-mogabli1.replit.app/calendar_oauth2callback
+
+Development URIs (Testing):
+• https://96ee5be3-c82c-461f-815f-1879787c70fa-00-36haqnmfpcg7h.spock.replit.dev/oauth2callback
+• https://96ee5be3-c82c-461f-815f-1879787c70fa-00-36haqnmfpcg7h.spock.replit.dev/calendar_oauth2callback
+
+All URIs use HTTPS and match exactly with the OAuth flow implementation. The "redirect_uri_mismatch" error has been resolved.
+
+ADDITIONAL VERIFICATION INFORMATION:
+
+OAuth Consent Screen Configuration:
+• App Name: SmartOffice AI
+• Homepage: https://www.smartoffice-ai.com
+• Privacy Policy: https://www.smartoffice-ai.com/privacy
+• Terms of Service: https://www.smartoffice-ai.com/terms
+• User Support Email: info@smartoffice-ai.com
+
+Enabled APIs:
+• Gmail API (enabled)
+• Google Calendar API (enabled)
+
+Requested Scopes (Minimum Necessary):
+• https://www.googleapis.com/auth/gmail.readonly
+• https://www.googleapis.com/auth/calendar.readonly
+
+Both scopes are read-only and essential for the application's core functionality, which helps small business owners organise emails and manage calendars with AI assistance.
+
+LEGITIMATE USE CASE JUSTIFICATION:
+
+SmartOffice AI is a productivity tool designed for small and medium enterprises (SMEs) to:
+
+1. Reduce email overload by automatically categorising messages by priority using GPT-5 AI
+2. Save time with AI-generated email reply suggestions
+3. Improve calendar management by integrating Google Calendar with email summaries
+4. Generate professional reports (PDF/Word) combining email and calendar data for weekly reviews
+
+The application serves busy professionals, small business owners, and administrative teams who need to manage high volumes of emails and appointments efficiently. Each user maintains complete control over their data through individual OAuth authentication.
+
+Please let me know if you need any additional information or clarification.
+
+Thank you for your time and consideration.
+
+Best regards,
+Sami Mohamed
+Website: https://www.smartoffice-ai.com

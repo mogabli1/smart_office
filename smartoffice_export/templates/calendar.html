@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">📅 Google Calendar</h2>
+      <p class="text-muted mb-0">{{ events|length if events else 0 }} {{ t('events') }}</p>
+    </div>
+    {% if connected %}
+    <span class="badge bg-success px-3 py-2">
+      <i class="bi bi-check-circle {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> {{ t('connected') }}
+    </span>
+    {% else %}
+    <span class="badge bg-warning px-3 py-2">
+      <i class="bi bi-exclamation-circle {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> {{ t('not_connected') }}
+    </span>
+    {% endif %}
+  </div>
+
+  {% if events %}
+  <div class="row g-3">
+    {% for event in events %}
+    <div class="col-12">
+      <div class="card shadow-sm hover-shadow">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0 fw-semibold" style="color: #2c3e50;">
+              <i class="bi bi-calendar-event {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}" style="color: #7B2CBF;"></i>
+              {{ event.summary }}
+            </h5>
+          </div>
+          <p class="text-muted mb-2">
+            <i class="bi bi-clock {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+            <strong>{{ event.start }}</strong>
+          </p>
+          {% if event.location %}
+          <p class="text-muted mb-2">
+            <i class="bi bi-geo-alt {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+            {{ event.location }}
+          </p>
+          {% endif %}
+          {% if event.description %}
+          <p class="card-text text-muted mb-2">{{ event.description }}</p>
+          {% endif %}
+          {% if event.htmlLink %}
+          <a href="{{ event.htmlLink }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+            <i class="bi bi-box-arrow-up-right {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i> View in Google Calendar
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card shadow-sm text-center py-5">
+    <div class="card-body">
+      {% if not connected %}
+        <div class="mb-4">
+          <i class="bi bi-calendar-x" style="font-size: 4rem; color: #6c757d;"></i>
+        </div>
+        <h4 class="mb-3">Google Calendar Not Connected</h4>
+        <p class="text-muted mb-4">Connect your Google Calendar to view upcoming events and manage your schedule.</p>
+        <a href="{{ url_for('calendar_authorize') }}" class="btn btn-primary btn-lg" target="_blank">
+          <i class="bi bi-google {% if lang == 'ar' %}ms-2{% else %}me-2{% endif %}"></i>Connect Google Calendar
+        </a>
+        <p class="text-muted small mt-3 mb-0">
+          <i class="bi bi-shield-check {% if lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+          Your data is secure and only you can access your calendar
+        </p>
+      {% else %}
+        <div class="mb-4">
+          <i class="bi bi-calendar-check" style="font-size: 4rem; color: #6c757d;"></i>
+        </div>
+        <h4 class="mb-2">No Upcoming Events</h4>
+        <p class="text-muted">You have no upcoming events in your calendar.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+.card {
+  border: 1px solid #e9ecef;
+}
+.card-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+</style>
+{% endblock %}

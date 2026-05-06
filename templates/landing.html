@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO Meta Tags -->
+  <title>SmartOffice AI – AI-Powered Admin Assistant for SMEs | Email, Calendar & Reports</title>
+  <meta name="description" content="Transform your workflow with SmartOffice AI. Get AI-powered email organization, Google Calendar integration, and automated PDF/Word reports. Built for busy professionals. Only $19.99/month.">
+  <meta name="keywords" content="AI admin assistant, email management, Google Calendar integration, automated reports, business productivity, AI email organization, SME software">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.smartoffice-ai.com/">
+  
+  <!-- Open Graph / Social Media Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.smartoffice-ai.com/">
+  <meta property="og:title" content="SmartOffice AI – Your Intelligent Admin Assistant">
+  <meta property="og:description" content="Transform your workflow with AI-powered email management, smart calendar integration, and automated report generation. Built for busy professionals and small business owners.">
+  <meta property="og:image" content="https://www.smartoffice-ai.com/static/images/smartoffice-logo.svg">
+  <meta property="og:site_name" content="SmartOffice AI">
+  
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SmartOffice AI – Your Intelligent Admin Assistant">
+  <meta name="twitter:description" content="AI-powered email organization, calendar integration, and automated reports for SMEs. Only $19.99/month.">
+  <meta name="twitter:image" content="https://www.smartoffice-ai.com/static/images/smartoffice-logo.svg">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
+  
+  <!-- ✅ Google Search Console Verification -->
+  <meta name="google-site-verification" content="sVOnMrzEgYfcHf-bjdoMRiYFB-qdci-HvI9cLL7b3xY" />
+  
+  <!-- ✅ Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RFV9LCB1N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4RFV9LCB1N');
+  </script>
+  
+  <!-- Schema Markup for Better Google Understanding -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SmartOffice AI",
+    "description": "AI-powered admin assistant for SMEs with email management, Google Calendar integration, and automated report generation",
+    "url": "https://www.smartoffice-ai.com",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "19.99",
+      "priceCurrency": "USD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "19.99",
+        "priceCurrency": "USD",
+        "billingDuration": "P1M"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "150"
+    },
+    "featureList": [
+      "AI-Powered Email Organization",
+      "Smart Reply Suggestions",
+      "Google Calendar Integration",
+      "Automated PDF/Word Reports",
+      "Bilingual Interface (English/Arabic)"
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; text-align: center; padding: 12px 20px; font-weight: 600; font-size: 15px; letter-spacing: 0.3px;">
+    🚧 We are currently updating SmartOffice AI with new and improved services. Registration and login are temporarily disabled. We'll be back soon!
+  </div>
+  <nav class="top-nav">
+    <div class="nav-container">
+      <a href="{{ url_for('landing') }}" class="nav-brand" style="text-decoration: none;">
+        <div class="logo-small">SO</div>
+        <span class="brand-name">SmartOffice AI</span>
+      </a>
+      <div class="nav-actions">
+        <a href="{{ url_for('landing_ar') }}" class="lang-btn">
+          <span class="flag">🇸🇦</span>
+          <span>العربية</span>
+        </a>
+        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-small">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="fade-in">
+    <div class="logo">SO</div>
+    <h1>SmartOffice AI</h1>
+    <p class="subtitle">Your Intelligent Admin Assistant</p>
+    <p class="description">
+      Transform your daily workflow with AI-powered email management, smart calendar integration, 
+      and automated report generation. Built for busy professionals and small business owners.
+    </p>
+    <div class="buttons">
+      <a href="{{ url_for('login') }}" class="btn btn-primary">Get Started</a>
+      <a href="#features" class="btn btn-secondary">Learn More</a>
+    </div>
+  </header>
+
+  <section class="features fade-in" id="features">
+    <h2 class="section-title">Powerful Features to Boost Your Productivity</h2>
+    <p class="section-subtitle">Everything you need to manage your office tasks efficiently</p>
+    
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">📧</div>
+        <h3>AI-Powered Email Organization</h3>
+        <p>Automatically categorize emails by priority (Urgent, Important, Normal) using GPT-5 AI. Never miss critical messages again.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>Smart Reply Suggestions</h3>
+        <p>Get AI-generated email responses in 3 different tones (Professional, Friendly, Brief). Save hours on email composition.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <h3>Google Calendar Integration</h3>
+        <p>Seamlessly sync with your Google Calendar. View upcoming events, manage meetings, and stay organized effortlessly.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Automated Report Generation</h3>
+        <p>Generate professional PDF and Word reports with email summaries and calendar data in seconds. Export and share instantly.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌍</div>
+        <h3>Bilingual Interface</h3>
+        <p>Full support for English and Arabic with RTL layout. Switch languages seamlessly to match your preference.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>Your data stays yours. Each user connects their own Gmail and Calendar accounts. No shared data, complete privacy.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-preview fade-in">
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-subtitle">Professional features at an affordable price.</p>
+    <div class="pricing-card">
+      <div class="price">$19.99<span>/month</span></div>
+      <ul class="benefits">
+        <li>✓ Unlimited email organization</li>
+        <li>✓ AI reply suggestions</li>
+        <li>✓ Calendar integration</li>
+        <li>✓ Automated reports</li>
+        <li>✓ Bilingual support</li>
+        <li>✓ 24/7 customer support</li>
+      </ul>
+      <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+    </div>
+  </section>
+
+  <section class="cta-section fade-in">
+    <h2>Ready to Transform Your Workflow?</h2>
+    <p>Join hundreds of professionals already saving 10+ hours per week</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Get Started Now</a>
+  </section>
+
+  <footer class="fade-in">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo-small">SO</div>
+        <p>SmartOffice AI</p>
+      </div>
+      <div class="footer-links">
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+        <a href="{{ url_for('terms') }}">Terms of Use</a>
+        <a href="{{ url_for('contact') }}">Contact Us</a>
+      </div>
+    </div>
+    <p class="copyright">© 2025 SmartOffice AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>

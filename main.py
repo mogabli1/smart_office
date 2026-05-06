@@ -31,6 +31,10 @@ def privacy_page():
 def terms_page():
     return render_template('terms.html')
 
+@app.route('/success.html')
+def success_page():
+    return render_template('success.html')
+
 @app.route('/assets/<path:path>')
 def send_assets(path):
     return send_from_directory('assets', path)
@@ -42,8 +46,11 @@ def submit_contact():
     interest = request.form.get('interest')
     message_content = request.form.get('message')
 
+    print(f"DEBUG: Received submission from {name} ({email})")
+
     if not GMAIL_USER or not GMAIL_PASSWORD:
-        return "Server Error: Gmail credentials not configured.", 500
+        print("DEBUG: ERROR - Gmail credentials missing!")
+        return "Server Error: Gmail credentials not configured in Render environment variables.", 500
 
     # Create Email
     msg = MIMEMultipart()
@@ -64,18 +71,26 @@ def submit_contact():
     msg.attach(MIMEText(body, 'plain'))
 
     try:
-        # Connect to Gmail SMTP
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        print("DEBUG: Connecting to smtp.gmail.com:587...")
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=15)
+        
+        print("DEBUG: Starting TLS...")
         server.starttls()
+        
+        print(f"DEBUG: Attempting login for {GMAIL_USER}...")
         server.login(GMAIL_USER, GMAIL_PASSWORD)
+        
+        print("DEBUG: Sending email...")
         text = msg.as_string()
         server.sendmail(GMAIL_USER, RECEIVER_EMAIL, text)
+        
+        print("DEBUG: Closing connection...")
         server.quit()
         
-        # Redirect back to index or a success page
-        return redirect('/index.html')
+        print("DEBUG: SUCCESS! Redirecting to success page.")
+        return redirect('/success.html')
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"DEBUG: EXCEPTION caught: {e}")
         return f"Failed to send message. Error: {e}", 500
 
 if __name__ == '__main__':

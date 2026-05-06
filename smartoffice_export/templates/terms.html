@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <h1 class="mb-4">Terms of Service</h1>
+      <p class="text-muted mb-4"><strong>Last Updated:</strong> October 8, 2025</p>
+
+      <h2 class="h4 mt-4 mb-3">1. Acceptance of Terms</h2>
+      <p>By accessing and using SmartOffice AI ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Service.</p>
+
+      <h2 class="h4 mt-4 mb-3">2. Description of Service</h2>
+      <p>SmartOffice AI is an intelligent administrative assistant that provides:</p>
+      <ul>
+        <li>AI-powered email priority categorization</li>
+        <li>Smart email reply suggestions</li>
+        <li>Google Calendar integration</li>
+        <li>Automated PDF and Word report generation</li>
+        <li>Bilingual interface support (English/Arabic)</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">3. Account Registration</h2>
+      <ul>
+        <li>You must provide accurate and complete information when creating an account</li>
+        <li>You are responsible for maintaining the confidentiality of your password</li>
+        <li>You must be at least 18 years old to use this Service</li>
+        <li>One account per user; multiple accounts are prohibited</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">4. Subscription and Payment</h2>
+      <h3 class="h5 mt-3">4.1 Premium Plan</h3>
+      <ul>
+        <li>Pricing is displayed on our pricing page and may be updated from time to time</li>
+        <li>Payment processed securely through Stripe</li>
+        <li>Subscription auto-renews unless cancelled</li>
+        <li>Current subscribers will be notified 30 days in advance of any price changes</li>
+      </ul>
+
+      <h3 class="h5 mt-3">4.2 Cancellation & Refunds</h3>
+      <ul>
+        <li>You may cancel your subscription at any time</li>
+        <li>Cancellation takes effect at the end of the current billing period</li>
+        <li>No refunds for partial months</li>
+        <li>Refund requests for billing errors will be reviewed on a case-by-case basis</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">5. Google Account Integration</h2>
+      <ul>
+        <li>You must authorize SmartOffice AI to access your Gmail and Google Calendar</li>
+        <li>We only request read-only access to your data</li>
+        <li>You can revoke access at any time through your account settings</li>
+        <li>Your use of Google services is subject to Google's Terms of Service</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">6. Acceptable Use</h2>
+      <p>You agree NOT to:</p>
+      <ul>
+        <li>Use the Service for any illegal or unauthorized purpose</li>
+        <li>Attempt to gain unauthorized access to our systems</li>
+        <li>Interfere with or disrupt the Service</li>
+        <li>Share your account credentials with others</li>
+        <li>Use automated tools (bots) to access the Service</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">7. AI-Generated Content</h2>
+      <ul>
+        <li>AI-powered features (email categorization, reply suggestions) are provided as-is</li>
+        <li>AI suggestions should be reviewed before sending</li>
+        <li>We are not responsible for the accuracy of AI-generated content</li>
+        <li>You are solely responsible for all communications sent from your email</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">8. Data Privacy & Security</h2>
+      <ul>
+        <li>We implement industry-standard security measures</li>
+        <li>Your data is isolated per user (no sharing between accounts)</li>
+        <li>See our <a href="{{ url_for('privacy') }}">Privacy Policy</a> for detailed information</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">9. Service Availability</h2>
+      <ul>
+        <li>We strive for 99% uptime but do not guarantee uninterrupted service</li>
+        <li>We may perform scheduled maintenance with advance notice</li>
+        <li>We are not liable for service interruptions or data loss</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">10. Intellectual Property</h2>
+      <ul>
+        <li>SmartOffice AI and all related trademarks are our property</li>
+        <li>You retain ownership of your data (emails, calendar events)</li>
+        <li>We retain ownership of AI models and generated insights</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">11. Limitation of Liability</h2>
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW:</p>
+      <ul>
+        <li>SmartOffice AI is provided "AS IS" without warranties of any kind</li>
+        <li>We are not liable for any indirect, incidental, or consequential damages</li>
+        <li>Our total liability shall not exceed the amount you paid in the last 12 months</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">12. Termination</h2>
+      <ul>
+        <li>We may suspend or terminate your account for violating these Terms</li>
+        <li>You may delete your account at any time</li>
+        <li>Upon termination, your data will be deleted within 30 days</li>
+      </ul>
+
+      <h2 class="h4 mt-4 mb-3">13. Changes to Terms</h2>
+      <p>We reserve the right to modify these Terms at any time. We will notify users of significant changes via email. Continued use of the Service after changes constitutes acceptance of the new Terms.</p>
+
+      <h2 class="h4 mt-4 mb-3">14. Governing Law</h2>
+      <p>These Terms are governed by the laws of [Your Jurisdiction]. Any disputes shall be resolved in the courts of [Your Jurisdiction].</p>
+
+      <h2 class="h4 mt-4 mb-3">15. Contact Information</h2>
+      <p>For questions about these Terms, contact us at:</p>
+      <p><strong>Email:</strong> info@smartoffice-ai.com</p>
+
+      <div class="mt-5 mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

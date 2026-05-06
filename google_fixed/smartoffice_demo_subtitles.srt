@@ -1,0 +1,159 @@
+1
+00:00:00,000 --> 00:00:04,000
+SmartOffice AI - OAuth Demo for Google Verification
+
+2
+00:00:04,000 --> 00:00:08,000
+Logging into SmartOffice AI with test account
+
+3
+00:00:08,000 --> 00:00:12,000
+Dashboard loaded - Ready to connect Gmail and Calendar
+
+4
+00:00:12,000 --> 00:00:16,000
+Clicking "Connect Gmail" to start OAuth authorization
+
+5
+00:00:16,000 --> 00:00:20,000
+Google OAuth consent screen appears
+
+6
+00:00:20,000 --> 00:00:25,000
+App requests: "See and download your email messages and settings"
+
+7
+00:00:25,000 --> 00:00:29,000
+This is the gmail.readonly scope
+
+8
+00:00:29,000 --> 00:00:34,000
+Clicking the blue link to show detailed permissions...
+
+9
+00:00:34,000 --> 00:00:39,000
+Expanded permissions show gmail.readonly scope allows:
+
+10
+00:00:39,000 --> 00:00:44,000
+✓ View email messages and settings
+
+11
+00:00:44,000 --> 00:00:49,000
+✗ NO permission to send, delete, or modify emails
+
+12
+00:00:49,000 --> 00:00:54,000
+This is READ-ONLY access for email categorization
+
+13
+00:00:54,000 --> 00:00:58,000
+The app cannot make any changes to your inbox
+
+14
+00:00:58,000 --> 00:01:02,000
+Clicking "Continue" to authorize Gmail access...
+
+15
+00:01:02,000 --> 00:01:06,000
+Authorization successful - Redirecting to app...
+
+16
+00:01:06,000 --> 00:01:10,000
+Gmail inbox successfully loaded
+
+17
+00:01:10,000 --> 00:01:14,000
+Emails displayed with AI priority categories
+
+18
+00:01:14,000 --> 00:01:18,000
+Now connecting Google Calendar...
+
+19
+00:01:18,000 --> 00:01:22,000
+Clicking "Connect Calendar" button
+
+20
+00:01:22,000 --> 00:01:26,000
+Google OAuth consent screen for Calendar
+
+21
+00:01:26,000 --> 00:01:31,000
+App requests: "See and download any calendar you can access"
+
+22
+00:01:31,000 --> 00:01:35,000
+This is the calendar.readonly scope
+
+23
+00:01:35,000 --> 00:01:40,000
+Clicking to show detailed calendar permissions...
+
+24
+00:01:40,000 --> 00:01:45,000
+Calendar.readonly scope allows:
+
+25
+00:01:45,000 --> 00:01:50,000
+✓ View calendar events and details
+
+26
+00:01:50,000 --> 00:01:55,000
+✓ Download calendar data for reports
+
+27
+00:01:55,000 --> 00:02:00,000
+✗ NO permission to create, edit, or delete events
+
+28
+00:02:00,000 --> 00:02:05,000
+This is strictly READ-ONLY access
+
+29
+00:02:05,000 --> 00:02:09,000
+Your calendar data remains secure and unchanged
+
+30
+00:02:09,000 --> 00:02:13,000
+The app only reads events for weekly reports
+
+31
+00:02:13,000 --> 00:02:17,000
+Clicking "Continue" to authorize Calendar access...
+
+32
+00:02:17,000 --> 00:02:21,000
+Authorization successful - Loading calendar events...
+
+33
+00:02:21,000 --> 00:02:25,000
+Calendar events successfully displayed
+
+34
+00:02:25,000 --> 00:02:29,000
+Events include: title, date, time, and location
+
+35
+00:02:29,000 --> 00:02:33,000
+Optional: Generating weekly report...
+
+36
+00:02:33,000 --> 00:02:37,000
+Report includes email summaries and calendar events
+
+37
+00:02:37,000 --> 00:02:42,000
+All data is read-only - ensuring user privacy and security
+
+38
+00:02:42,000 --> 00:02:47,000
+SmartOffice AI uses only read-only OAuth scopes
+
+39
+00:02:47,000 --> 00:02:52,000
+Gmail.readonly and Calendar.readonly for complete data safety
+
+40
+00:02:52,000 --> 00:02:56,000
+Thank you for reviewing SmartOffice AI OAuth implementation
