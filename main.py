@@ -6,7 +6,7 @@ app = Flask(__name__, static_folder='static', template_folder='.')
 
 # Configuration
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
-RECEIVER_EMAIL = os.environ.get('RECEIVER_EMAIL', 'info@smartoffice-ai.com')
+RECEIVER_EMAIL = os.environ.get('RECEIVER_EMAIL', 'mogabli12@gmail.com')
 
 @app.route('/')
 def home():
